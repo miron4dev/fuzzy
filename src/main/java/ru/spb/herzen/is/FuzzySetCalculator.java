@@ -1,6 +1,7 @@
 package ru.spb.herzen.is;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,6 +18,7 @@ public class FuzzySetCalculator {
     private List<Double> transitionPoint;
     private Double height;
     private List<Double> support;
+    private List<Integer> nearestClearSet;
 
     public FuzzySetCalculator(Map<Double, Double> set) {
         this.set = set;
@@ -62,9 +64,9 @@ public class FuzzySetCalculator {
     public double getHeight() {
         if (height == null) {
             height = 0.0;
-            for (Double value : set.values()) {
-                if (value > height) {
-                    height = value;
+            for (Double mu : set.values()) {
+                if (mu > height) {
+                    height = mu;
                 }
             }
         }
@@ -95,5 +97,59 @@ public class FuzzySetCalculator {
             height = 1.0;
         }
         return set;
+    }
+
+    /**
+     * Returns a Hamming distance between the current fuzzy set and the specified another set.
+     * @param anotherSet another fuzzy set.
+     * @return see description.
+     */
+    public double getHammingDistance(final Map<Double, Double> anotherSet) {
+        double distance = 0.0;
+        Iterator<Double> setIter = set.values().iterator();
+        Iterator<Double> anotherSetIter = anotherSet.values().iterator();
+        while (setIter.hasNext() && anotherSetIter.hasNext()) {
+            distance += Math.abs(setIter.next() - anotherSetIter.next());
+        }
+        for (Iterator<Double> lastIter = setIter.hasNext() ? setIter : anotherSetIter; lastIter.hasNext();) {
+            distance += lastIter.next();
+        }
+        return distance;
+    }
+
+    /**
+     * Returns an Euclidean distance between the current fuzzy set and the specified another set.
+     * @param anotherSet another fuzzy set.
+     * @return see description.
+     */
+    public double getEuclideanDistance(final Map<Double, Double> anotherSet) {
+        double distance = 0.0;
+        Iterator<Double> setIter = set.values().iterator();
+        Iterator<Double> anotherSetIter = anotherSet.values().iterator();
+        while (setIter.hasNext() && anotherSetIter.hasNext()) {
+            distance += Math.pow(setIter.next() - anotherSetIter.next(), 2);
+        }
+        for (Iterator<Double> lastIter = setIter.hasNext() ? setIter : anotherSetIter; lastIter.hasNext();) {
+            distance += lastIter.next();
+        }
+        return Math.sqrt(distance);
+    }
+
+    /**
+     * Returns a nearest clear set for the current fuzzy set.
+     * @return see description.
+     */
+    public List<Integer> getNearestClearSet() {
+        if (nearestClearSet == null) {
+            nearestClearSet = new ArrayList<>();
+            for (Double mu: set.values()) {
+                if (mu > 0.5) {
+                    nearestClearSet.add(1);
+                } else {
+                    nearestClearSet.add(0);
+                }
+            }
+        }
+        return nearestClearSet;
     }
 }
