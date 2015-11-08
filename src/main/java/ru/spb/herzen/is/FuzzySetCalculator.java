@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 /**
  * Implementation of methods to work with Fuzzy Sets.
+ *
  * @author Evgeny Mironenko
  */
 public class FuzzySetCalculator {
@@ -19,6 +20,7 @@ public class FuzzySetCalculator {
     private Double height;
     private List<Double> support;
     private List<Integer> nearestClearSet;
+    private Double entropy;
 
     public FuzzySetCalculator(Map<Double, Double> set) {
         this.set = set;
@@ -35,6 +37,7 @@ public class FuzzySetCalculator {
 
     /**
      * Returns a core of the current fuzzy set.
+     *
      * @return see description.
      */
     public List<Double> getCore() {
@@ -47,6 +50,7 @@ public class FuzzySetCalculator {
 
     /**
      * Returns a transition point of the current fuzzy set.
+     *
      * @return see description.
      */
     public List<Double> getTransitionPoint() {
@@ -59,6 +63,7 @@ public class FuzzySetCalculator {
 
     /**
      * Returns a height "supremum(set)" of the current fuzzy set.
+     *
      * @return see description.
      */
     public double getHeight() {
@@ -75,6 +80,7 @@ public class FuzzySetCalculator {
 
     /**
      * Returns a support of the current fuzzy set.
+     *
      * @return see description.
      */
     public List<Double> getSupport() {
@@ -87,6 +93,7 @@ public class FuzzySetCalculator {
 
     /**
      * Normalizes current fuzzy set, if it's subnormal. Replace the old set by the new one and returns it.
+     *
      * @return a normalized fuzzy set.
      */
     public Map<Double, Double> normalize() {
@@ -101,6 +108,7 @@ public class FuzzySetCalculator {
 
     /**
      * Returns a Hamming distance between the current fuzzy set and the specified another set.
+     *
      * @param anotherSet another fuzzy set.
      * @return see description.
      */
@@ -111,7 +119,7 @@ public class FuzzySetCalculator {
         while (setIter.hasNext() && anotherSetIter.hasNext()) {
             distance += Math.abs(setIter.next() - anotherSetIter.next());
         }
-        for (Iterator<Double> lastIter = setIter.hasNext() ? setIter : anotherSetIter; lastIter.hasNext();) {
+        for (Iterator<Double> lastIter = setIter.hasNext() ? setIter : anotherSetIter; lastIter.hasNext(); ) {
             distance += lastIter.next();
         }
         return distance;
@@ -119,6 +127,7 @@ public class FuzzySetCalculator {
 
     /**
      * Returns an Euclidean distance between the current fuzzy set and the specified another set.
+     *
      * @param anotherSet another fuzzy set.
      * @return see description.
      */
@@ -129,7 +138,7 @@ public class FuzzySetCalculator {
         while (setIter.hasNext() && anotherSetIter.hasNext()) {
             distance += Math.pow(setIter.next() - anotherSetIter.next(), 2);
         }
-        for (Iterator<Double> lastIter = setIter.hasNext() ? setIter : anotherSetIter; lastIter.hasNext();) {
+        for (Iterator<Double> lastIter = setIter.hasNext() ? setIter : anotherSetIter; lastIter.hasNext(); ) {
             distance += lastIter.next();
         }
         return Math.sqrt(distance);
@@ -137,12 +146,13 @@ public class FuzzySetCalculator {
 
     /**
      * Returns a nearest clear set for the current fuzzy set.
+     *
      * @return see description.
      */
     public List<Integer> getNearestClearSet() {
         if (nearestClearSet == null) {
             nearestClearSet = new ArrayList<>();
-            for (Double mu: set.values()) {
+            for (Double mu : set.values()) {
                 if (mu > 0.5) {
                     nearestClearSet.add(1);
                 } else {
@@ -151,5 +161,26 @@ public class FuzzySetCalculator {
             }
         }
         return nearestClearSet;
+    }
+
+    /**
+     * Returns an entropy of the current fuzzy set.
+     *
+     * @return see description.
+     */
+    public double getEntropy() {
+        if (entropy == null) {
+            entropy = 0.0;
+            double p;
+            for (Double mu : set.values()) {
+                p = mu / set.values().stream().mapToDouble(Double::doubleValue).sum();
+                if (p == 0.0) {
+                    continue;
+                }
+                entropy += p * Math.log(p) / Math.log(2);
+            }
+            entropy = (-1 * entropy) / (Math.log(6) / Math.log(2));
+        }
+        return entropy;
     }
 }

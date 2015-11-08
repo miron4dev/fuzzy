@@ -128,7 +128,7 @@ public class FuzzySetCalculatorTest {
     public void testGetHammingDistance() {
         FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET1);
         double hammingDistance = calculator.getHammingDistance(FUZZY_SET2);
-        assertEquals(1.01, hammingDistance);
+        assertEquals(1.1, hammingDistance);
     }
 
     @Test
@@ -191,8 +191,36 @@ public class FuzzySetCalculatorTest {
         List<Integer> expected = Arrays.asList(0, 1, 0, 1);
         Assert.assertEquals(expected, nearestSet);
     }
-    
+
+    @Test
+    public void testGetEntropy() {
+        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET1);
+        double entropy = calculator.getEntropy();
+        assertEquals(0.74, entropy);
+    }
+
+    @Test
+    public void testGetEntropy2() {
+        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET2);
+        double entropy = calculator.getEntropy();
+        assertEquals(0.58, entropy);
+    }
+
+    @Test
+    public void testGetEntropy3() {
+        FuzzySetCalculator calculator = new FuzzySetCalculator(new LinkedHashMap<Double, Double>() {{
+            put(1.0, 0.7);
+            put(2.0, 0.9);
+            put(3.0, 0.0);
+            put(4.0, 0.6);
+            put(5.0, 0.5);
+            put(6.0, 1.0);
+        }});
+        double entropy = calculator.getEntropy();
+        assertEquals(0.89, entropy);
+    }
+
     private void assertEquals(double expected, double actual) {
-        Assert.assertEquals(expected, actual, 0.1);
+        Assert.assertEquals(expected, actual, 0.01);
     }
 }
