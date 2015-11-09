@@ -10,6 +10,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 /**
  * <code>@FixMethodOrder</code> is required the order to avoid collision data after <code>normalize</code> method execution.
  * JIT optimization.
@@ -218,6 +221,78 @@ public class FuzzySetCalculatorTest {
         }});
         double entropy = calculator.getEntropy();
         assertEquals(0.89, entropy);
+    }
+
+    @Test
+    public void testIsConvex() {
+        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET1);
+        assertFalse(calculator.isConvex());
+    }
+
+    @Test
+    public void testIsConvex2() {
+        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET2);
+        assertFalse(calculator.isConvex());
+    }
+
+    @Test
+    public void testIsConvex3() {
+        FuzzySetCalculator calculator = new FuzzySetCalculator(new LinkedHashMap<Double, Double>() {{
+            put(1.0, 0.5);
+            put(2.0, 0.7);
+            put(3.0, 0.6);
+        }});
+        assertTrue(calculator.isConvex());
+    }
+
+    @Test
+    public void testIsConvex4() {
+        FuzzySetCalculator calculator = new FuzzySetCalculator(new LinkedHashMap<Double, Double>() {{
+            put(1.0, 0.7);
+            put(2.0, 0.5);
+        }});
+        assertTrue(calculator.isConvex());
+    }
+
+    @Test
+    public void testIsConcave() {
+        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET1);
+        assertFalse(calculator.isConcave());
+    }
+
+    @Test
+    public void testIsConcave2() {
+        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET2);
+        assertTrue(calculator.isConcave());
+    }
+
+    @Test
+    public void testIsConcave3() {
+        FuzzySetCalculator calculator = new FuzzySetCalculator(new LinkedHashMap<Double, Double>() {{
+            put(1.0, 0.5);
+            put(2.0, 0.3);
+            put(4.0, 0.6);
+        }});
+        assertTrue(calculator.isConcave());
+    }
+
+    @Test
+    public void testIsConcave4() {
+        FuzzySetCalculator calculator = new FuzzySetCalculator(new LinkedHashMap<Double, Double>() {{
+            put(1.0, 0.5);
+            put(2.0, 0.7);
+            put(4.0, 0.6);
+        }});
+        assertFalse(calculator.isConcave());
+    }
+
+    @Test
+    public void testIsConcave5() {
+        FuzzySetCalculator calculator = new FuzzySetCalculator(new LinkedHashMap<Double, Double>() {{
+            put(1.0, 0.5);
+            put(2.0, 0.3);
+        }});
+        assertTrue(calculator.isConcave());
     }
 
     private void assertEquals(double expected, double actual) {

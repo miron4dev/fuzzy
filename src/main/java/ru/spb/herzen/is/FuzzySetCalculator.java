@@ -21,6 +21,8 @@ public class FuzzySetCalculator {
     private List<Double> support;
     private List<Integer> nearestClearSet;
     private Double entropy;
+    private Boolean convex;
+    private Boolean concave;
 
     public FuzzySetCalculator(Map<Double, Double> set) {
         this.set = set;
@@ -33,6 +35,11 @@ public class FuzzySetCalculator {
         core = getCore();
         transitionPoint = getTransitionPoint();
         height = getHeight();
+        support = getSupport();
+        nearestClearSet = getNearestClearSet();
+        entropy = getEntropy();
+        convex = isConvex();
+        concave = isConcave();
     }
 
     /**
@@ -182,5 +189,80 @@ public class FuzzySetCalculator {
             entropy = (-1 * entropy) / (Math.log(6) / Math.log(2));
         }
         return entropy;
+    }
+
+    /**
+     * Returns true if the current fuzzy set is convex.
+     *
+     * @return see description.
+     */
+    public boolean isConvex() {
+        if (convex == null) {
+            if (set.size() < 3) {
+                convex = true;
+                return true;
+            }
+            List<Map.Entry<Double, Double>> entries = new ArrayList<>(set.entrySet());
+            double x1, x2, x3, mu1, mu2, mu3;
+            for (int i = 0; i < set.size() - 2; i++) {
+                x1 = entries.get(i).getKey();
+                mu1 = entries.get(i).getValue();
+                x2 = entries.get(i + 1).getKey();
+                mu2 = entries.get(i + 1).getValue();
+                x3 = entries.get(i + 2).getKey();
+                mu3 = entries.get(i + 2).getValue();
+                if (!(mu2 >= ( x3 - x2 ) / ( x3 - x1 ) * mu1 + ( x2 - x1 ) / ( x3 - x1 ) * mu3 ))  {
+                    convex = false;
+                    return false;
+                }
+            }
+            convex = true;
+        }
+        return convex;
+    }
+
+    /**
+     * Returns true if the current fuzzy set is concave.
+     *
+     * @return see description.
+     */
+    public boolean isConcave() {
+        if (concave == null) {
+            if (set.size() < 3) {
+                concave = true;
+                return true;
+            }
+            List<Map.Entry<Double, Double>> entries = new ArrayList<>(set.entrySet());
+            double x1, x2, x3, mu1, mu2, mu3;
+            for (int i = 0; i < set.size() - 2; i++) {
+                x1 = entries.get(i).getKey();
+                mu1 = entries.get(i).getValue();
+                x2 = entries.get(i + 1).getKey();
+                mu2 = entries.get(i + 1).getValue();
+                x3 = entries.get(i + 2).getKey();
+                mu3 = entries.get(i + 2).getValue();
+                if (!(mu2 <= ( x3 - x2 ) / ( x3 - x1 ) * mu1 + ( x2 - x1 ) / ( x3 - x1 ) * mu3 ))  {
+                    concave = false;
+                    return false;
+                }
+            }
+            concave = true;
+        }
+        return concave;
+    }
+
+    @Override
+    public String toString() {
+        return "FuzzySetCalculator{" +
+            "set=" + set +
+            ", core=" + core +
+            ", transitionPoint=" + transitionPoint +
+            ", height=" + height +
+            ", support=" + support +
+            ", nearestClearSet=" + nearestClearSet +
+            ", entropy=" + entropy +
+            ", convex=" + convex +
+            ", concave=" + concave +
+            '}';
     }
 }
