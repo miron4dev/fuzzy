@@ -252,6 +252,16 @@ public class FuzzySetCalculator {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        FuzzySetCalculator that = (FuzzySetCalculator) o;
+
+        return !(set != null ? !set.equals(that.set) : that.set != null);
+    }
+
+    @Override
     public String toString() {
         return "FuzzySetCalculator{" +
             "set=" + set +
