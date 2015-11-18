@@ -1,9 +1,11 @@
 package ru.spb.herzen.is;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -23,6 +25,9 @@ public class FuzzySetCalculator {
     private Double entropy;
     private Boolean convex;
     private Boolean concave;
+    private Map<Double, Double> addition;
+    private Map<Double, Double> concentration;
+    private Map<Double, Double> stretching;
 
     public FuzzySetCalculator(Map<Double, Double> set) {
         this.set = set;
@@ -116,7 +121,7 @@ public class FuzzySetCalculator {
     /**
      * Returns a Hamming distance between the current fuzzy set and the specified another set.
      *
-     * @param anotherSet another fuzzy set.
+     * @param anotherSet an another fuzzy set.
      * @return see description.
      */
     public double getHammingDistance(final Map<Double, Double> anotherSet) {
@@ -135,7 +140,7 @@ public class FuzzySetCalculator {
     /**
      * Returns an Euclidean distance between the current fuzzy set and the specified another set.
      *
-     * @param anotherSet another fuzzy set.
+     * @param anotherSet an another fuzzy set.
      * @return see description.
      */
     public double getEuclideanDistance(final Map<Double, Double> anotherSet) {
@@ -211,7 +216,7 @@ public class FuzzySetCalculator {
                 mu2 = entries.get(i + 1).getValue();
                 x3 = entries.get(i + 2).getKey();
                 mu3 = entries.get(i + 2).getValue();
-                if (!(mu2 >= ( x3 - x2 ) / ( x3 - x1 ) * mu1 + ( x2 - x1 ) / ( x3 - x1 ) * mu3 ))  {
+                if (!(mu2 >= (x3 - x2) / (x3 - x1) * mu1 + (x2 - x1) / (x3 - x1) * mu3)) {
                     convex = false;
                     return false;
                 }
@@ -241,7 +246,7 @@ public class FuzzySetCalculator {
                 mu2 = entries.get(i + 1).getValue();
                 x3 = entries.get(i + 2).getKey();
                 mu3 = entries.get(i + 2).getValue();
-                if (!(mu2 <= ( x3 - x2 ) / ( x3 - x1 ) * mu1 + ( x2 - x1 ) / ( x3 - x1 ) * mu3 ))  {
+                if (!(mu2 <= (x3 - x2) / (x3 - x1) * mu1 + (x2 - x1) / (x3 - x1) * mu3)) {
                     concave = false;
                     return false;
                 }
@@ -249,6 +254,285 @@ public class FuzzySetCalculator {
             concave = true;
         }
         return concave;
+    }
+
+    /**
+     * Returns an addition of the current fuzzy set.
+     *
+     * @return see description.
+     */
+    public Map<Double, Double> getAddition() {
+        if (addition == null) {
+            addition = new TreeMap<>();
+            for (Map.Entry<Double, Double> entry : set.entrySet()) {
+                addition.put(entry.getKey(), 1 - entry.getValue());
+            }
+        }
+        return addition;
+    }
+
+    /**
+     * Returns an union of the current and specified fuzzy sets.
+     * Implements Maximin algorithm.
+     *
+     * @param anotherSet an another fuzzy set.
+     * @return see description.
+     */
+    public Map<Double, Double> getUnionMax(Map<Double, Double> anotherSet) {
+        Map<Double, Double> result = new HashMap<>();
+        for (Map.Entry<Double, Double> entry : anotherSet.entrySet()) {
+            if (set.containsKey(entry.getKey())) {
+                result.put(entry.getKey(), Math.max(entry.getValue(), set.get(entry.getKey())));
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns an intersection of the current and specified fuzzy sets.
+     * Implements Maximin algorithm.
+     *
+     * @param anotherSet an another fuzzy set.
+     * @return see description.
+     */
+    public Map<Double, Double> getIntersectionMax(Map<Double, Double> anotherSet) {
+        Map<Double, Double> result = new HashMap<>();
+        for (Map.Entry<Double, Double> entry : anotherSet.entrySet()) {
+            if (set.containsKey(entry.getKey())) {
+                result.put(entry.getKey(), Math.min(entry.getValue(), set.get(entry.getKey())));
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Deducts specified fuzzy set from the current fuzzy set and returns the result.
+     * Implements Maximin algorithm.
+     *
+     * @param anotherSet an another fuzzy set.
+     * @return result of deduction.
+     */
+    public Map<Double, Double> deductMax(Map<Double, Double> anotherSet) {
+        return getIntersectionMax(new FuzzySetCalculator(anotherSet).getAddition());
+    }
+
+    /**
+     * Returns an union of the current and specified fuzzy sets.
+     * Implements algebraic algorithm.
+     *
+     * @param anotherSet an another fuzzy set.
+     * @return see description.
+     */
+    public Map<Double, Double> getUnionAlg(Map<Double, Double> anotherSet) {
+        Map<Double, Double> result = new HashMap<>();
+        for (Map.Entry<Double, Double> entry : anotherSet.entrySet()) {
+            if (set.containsKey(entry.getKey())) {
+                double mua = set.get(entry.getKey());
+                double mub = entry.getValue();
+                result.put(entry.getKey(), mua + mub - mua * mub);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns an intersection of the current and specified fuzzy sets.
+     * Implements algebraic algorithm.
+     *
+     * @param anotherSet an another fuzzy set.
+     * @return see description.
+     */
+    public Map<Double, Double> getIntersectionAlg(Map<Double, Double> anotherSet) {
+        Map<Double, Double> result = new HashMap<>();
+        for (Map.Entry<Double, Double> entry : anotherSet.entrySet()) {
+            if (set.containsKey(entry.getKey())) {
+                double mua = set.get(entry.getKey());
+                double mub = entry.getValue();
+                result.put(entry.getKey(), mua * mub);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Deducts specified fuzzy set from the current fuzzy set and returns the result.
+     * Implements algebraic algorithm.
+     *
+     * @param anotherSet an another fuzzy set.
+     * @return result of deduction.
+     */
+    public Map<Double, Double> deductAlg(Map<Double, Double> anotherSet) {
+        return getIntersectionAlg(new FuzzySetCalculator(anotherSet).getAddition());
+    }
+
+    /**
+     * Implements the first symmetric algorithm of algebraic deduction between the current and specified fuzzy sets.
+     *
+     * @param anotherSet an another fuzzy set.
+     * @return results of deduction.
+     */
+    public Map<Double, Double> symmetricDeduction1Alg(Map<Double, Double> anotherSet) {
+        Map<Double, Double> abDeduction = deductAlg(anotherSet);
+        Map<Double, Double> baDeduction = new FuzzySetCalculator(anotherSet).deductAlg(set);
+        return new FuzzySetCalculator(abDeduction).getUnionAlg(baDeduction);
+    }
+
+    /**
+     * Implements the second symmetric algorithm of algebraic deduction between the current and specified fuzzy sets.
+     *
+     * @param anotherSet an another fuzzy set.
+     * @return results of deduction.
+     */
+    public Map<Double, Double> symmetricDeduction2Alg(Map<Double, Double> anotherSet) {
+        Map<Double, Double> aPlusB = getUnionAlg(anotherSet);
+        Map<Double, Double> aBIntersection = getIntersectionAlg(anotherSet);
+        return new FuzzySetCalculator(aPlusB).deductAlg(aBIntersection);
+    }
+
+    /**
+     * Returns an union of the current and specified fuzzy sets.
+     * Implements limited algorithm.
+     *
+     * @param anotherSet an another fuzzy set.
+     * @return see description.
+     */
+    public Map<Double, Double> getUnionLim(Map<Double, Double> anotherSet) {
+        Map<Double, Double> result = new HashMap<>();
+        for (Map.Entry<Double, Double> entry : anotherSet.entrySet()) {
+            if (set.containsKey(entry.getKey())) {
+                result.put(entry.getKey(), Math.min(1, set.get(entry.getKey() + entry.getValue())));
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns an intersection of the current and specified fuzzy sets.
+     * Implements limited algorithm.
+     *
+     * @param anotherSet an another fuzzy set.
+     * @return see description.
+     */
+    public Map<Double, Double> getIntersectionLim(Map<Double, Double> anotherSet) {
+        Map<Double, Double> result = new HashMap<>();
+        for (Map.Entry<Double, Double> entry : anotherSet.entrySet()) {
+            if (set.containsKey(entry.getKey())) {
+                result.put(entry.getKey(), Math.max(0, set.get(entry.getKey() + entry.getValue() - 1)));
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Deducts specified fuzzy set from the current fuzzy set and returns the result.
+     * Implements limited algorithm.
+     *
+     * @param anotherSet an another fuzzy set.
+     * @return result of deduction.
+     */
+    public Map<Double, Double> deductLim(Map<Double, Double> anotherSet) {
+        return getIntersectionLim(new FuzzySetCalculator(anotherSet).getAddition());
+    }
+
+    /**
+     * Implements the first symmetric algorithm of limited deduction between the current and specified fuzzy sets.
+     *
+     * @param anotherSet an another fuzzy set.
+     * @return results of deduction.
+     */
+    public Map<Double, Double> symmetricDeduction1Lim(Map<Double, Double> anotherSet) {
+        Map<Double, Double> abDeduction = deductLim(anotherSet);
+        Map<Double, Double> baDeduction = new FuzzySetCalculator(anotherSet).deductLim(set);
+        return new FuzzySetCalculator(abDeduction).getUnionAlg(baDeduction);
+    }
+
+    /**
+     * Implements the second symmetric algorithm of limited deduction between the current and specified fuzzy sets.
+     *
+     * @param anotherSet an another fuzzy set.
+     * @return results of deduction.
+     */
+    public Map<Double, Double> symmetricDeduction2Lim(Map<Double, Double> anotherSet) {
+        Map<Double, Double> aPlusB = getUnionLim(anotherSet);
+        Map<Double, Double> aBIntersection = getIntersectionLim(anotherSet);
+        return new FuzzySetCalculator(aPlusB).deductLim(aBIntersection);
+    }
+
+    /**
+     * Returns an concentration of the current fuzzy set.
+     *
+     * @return see description.
+     */
+    public Map<Double, Double> getConcentration() {
+        if (concentration == null) {
+            concentration = new TreeMap<>();
+            for (Map.Entry<Double, Double> entry : set.entrySet()) {
+                concentration.put(entry.getKey(), Math.pow(entry.getValue(), 2));
+            }
+        }
+        return concentration;
+    }
+
+    /**
+     * Returns an stretching of the current fuzzy set.
+     *
+     * @return see description.
+     */
+    public Map<Double, Double> getStretching() {
+        if (stretching == null) {
+            stretching = new TreeMap<>();
+            for (Map.Entry<Double, Double> entry : set.entrySet()) {
+                stretching.put(entry.getKey(), Math.sqrt(entry.getValue()));
+            }
+        }
+        return stretching;
+    }
+
+    /**
+     * Returns an alpha cut according the specified alpha value.
+     *
+     * @param alpha a number between 0 and 1.
+     * @return see description.
+     */
+    public List<Double> getAlphaCut(double alpha) {
+        List<Double> result = new ArrayList<>();
+        for (Map.Entry<Double, Double> entry : set.entrySet()) {
+            if (entry.getValue() >= alpha) {
+                result.add(entry.getKey());
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns a strict alpha cut according the specified alpha value.
+     *
+     * @param alpha a number between 0 and 1.
+     * @return see description.
+     */
+    public List<Double> getStrictAlphaCut(double alpha) {
+        List<Double> result = new ArrayList<>();
+        for (Map.Entry<Double, Double> entry : set.entrySet()) {
+            if (entry.getValue() > alpha) {
+                result.add(entry.getKey());
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns true if the specified fuzzy set dominates (includes) the current fuzzy set.
+     *
+     * @param anotherSet an another fuzzy set.
+     * @return see description.
+     */
+    public boolean isDominate(Map<Double, Double> anotherSet) {
+        for (Map.Entry<Double, Double> entry : anotherSet.entrySet()) {
+            if (entry.getValue() < set.get(entry.getKey())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
