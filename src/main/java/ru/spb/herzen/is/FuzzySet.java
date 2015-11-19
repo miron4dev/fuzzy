@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  *
  * @author Evgeny Mironenko
  */
-public class FuzzySetCalculator {
+public class FuzzySet {
 
     private final Map<Double, Double> set;
 
@@ -29,7 +29,7 @@ public class FuzzySetCalculator {
     private Map<Double, Double> concentration;
     private Map<Double, Double> stretching;
 
-    public FuzzySetCalculator(Map<Double, Double> set) {
+    public FuzzySet(Map<Double, Double> set) {
         this.set = set;
     }
 
@@ -45,6 +45,9 @@ public class FuzzySetCalculator {
         entropy = getEntropy();
         convex = isConvex();
         concave = isConcave();
+        addition = getAddition();
+        concentration = getConcentration();
+        stretching = getStretching();
     }
 
     /**
@@ -313,7 +316,7 @@ public class FuzzySetCalculator {
      * @return result of deduction.
      */
     public Map<Double, Double> deductMax(Map<Double, Double> anotherSet) {
-        return getIntersectionMax(new FuzzySetCalculator(anotherSet).getAddition());
+        return getIntersectionMax(new FuzzySet(anotherSet).getAddition());
     }
 
     /**
@@ -362,7 +365,7 @@ public class FuzzySetCalculator {
      * @return result of deduction.
      */
     public Map<Double, Double> deductAlg(Map<Double, Double> anotherSet) {
-        return getIntersectionAlg(new FuzzySetCalculator(anotherSet).getAddition());
+        return getIntersectionAlg(new FuzzySet(anotherSet).getAddition());
     }
 
     /**
@@ -373,8 +376,8 @@ public class FuzzySetCalculator {
      */
     public Map<Double, Double> symmetricDeduction1Alg(Map<Double, Double> anotherSet) {
         Map<Double, Double> abDeduction = deductAlg(anotherSet);
-        Map<Double, Double> baDeduction = new FuzzySetCalculator(anotherSet).deductAlg(set);
-        return new FuzzySetCalculator(abDeduction).getUnionAlg(baDeduction);
+        Map<Double, Double> baDeduction = new FuzzySet(anotherSet).deductAlg(set);
+        return new FuzzySet(abDeduction).getUnionAlg(baDeduction);
     }
 
     /**
@@ -386,7 +389,7 @@ public class FuzzySetCalculator {
     public Map<Double, Double> symmetricDeduction2Alg(Map<Double, Double> anotherSet) {
         Map<Double, Double> aPlusB = getUnionAlg(anotherSet);
         Map<Double, Double> aBIntersection = getIntersectionAlg(anotherSet);
-        return new FuzzySetCalculator(aPlusB).deductAlg(aBIntersection);
+        return new FuzzySet(aPlusB).deductAlg(aBIntersection);
     }
 
     /**
@@ -431,7 +434,7 @@ public class FuzzySetCalculator {
      * @return result of deduction.
      */
     public Map<Double, Double> deductLim(Map<Double, Double> anotherSet) {
-        return getIntersectionLim(new FuzzySetCalculator(anotherSet).getAddition());
+        return getIntersectionLim(new FuzzySet(anotherSet).getAddition());
     }
 
     /**
@@ -442,8 +445,8 @@ public class FuzzySetCalculator {
      */
     public Map<Double, Double> symmetricDeduction1Lim(Map<Double, Double> anotherSet) {
         Map<Double, Double> abDeduction = deductLim(anotherSet);
-        Map<Double, Double> baDeduction = new FuzzySetCalculator(anotherSet).deductLim(set);
-        return new FuzzySetCalculator(abDeduction).getUnionAlg(baDeduction);
+        Map<Double, Double> baDeduction = new FuzzySet(anotherSet).deductLim(set);
+        return new FuzzySet(abDeduction).getUnionAlg(baDeduction);
     }
 
     /**
@@ -455,7 +458,7 @@ public class FuzzySetCalculator {
     public Map<Double, Double> symmetricDeduction2Lim(Map<Double, Double> anotherSet) {
         Map<Double, Double> aPlusB = getUnionLim(anotherSet);
         Map<Double, Double> aBIntersection = getIntersectionLim(anotherSet);
-        return new FuzzySetCalculator(aPlusB).deductLim(aBIntersection);
+        return new FuzzySet(aPlusB).deductLim(aBIntersection);
     }
 
     /**
@@ -535,19 +538,136 @@ public class FuzzySetCalculator {
         return true;
     }
 
+    /**
+     * Returns a result of defuzzification for the current fuzzy set.
+     * Implements Center of Gravity algorithm.
+     *
+     * @return see description.
+     */
+    public double getDefuzzificationCOG() {
+        double sum1 = 0;
+        double sum2 = 0;
+        for (Map.Entry<Double, Double> entry : set.entrySet()) {
+            sum1 += entry.getKey() * entry.getValue();
+            sum2 += entry.getValue();
+        }
+        return sum1 / sum2;
+    }
+
+    /**
+     * Returns a result of defuzzification for the current fuzzy set.
+     * Implements Center of Area algorithm.
+     *
+     * @return see description.
+     */
+    public double getDefuzzificationCOA() {
+        double result = Double.NaN;
+        double minSum = Double.MAX_VALUE;
+        for (Double x : set.keySet()) {
+            double tmp = getPartialSumResidual(x);
+            if (tmp < minSum) {
+                minSum = tmp;
+                result = x;
+            }
+        }
+        return result;
+    }
+
+    public double getPartialSumResidual(double x) {
+        Map<Double, Double> sortedSet = new TreeMap<>(set);
+        double firstSum = 0;
+        double secondSum = 0;
+        boolean left = true;
+        for (Map.Entry<Double, Double> entry : sortedSet.entrySet()) {
+            if (entry.getKey() == x) {
+                left = false;
+            }
+            if (left) {
+                firstSum += entry.getValue();
+            } else {
+                secondSum += entry.getValue();
+            }
+        }
+        return Math.abs(firstSum - secondSum);
+    }
+
+    /**
+     * Returns a result of defuzzification for the current fuzzy set.
+     * Implements Left of Maximum algorithm.
+     *
+     * @return see description.
+     */
+    public double getDefuzzificationLOM() {
+        double result = Double.MAX_VALUE;
+        double maxMu = 0;
+        for (Map.Entry<Double, Double> entry : set.entrySet()) {
+            if (entry.getValue() >= maxMu) {
+                maxMu = entry.getValue();
+                if (entry.getKey() < result) {
+                    result = entry.getKey();
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns a result of defuzzification for the current fuzzy set.
+     * Implements Right of Maximum algorithm.
+     *
+     * @return see description.
+     */
+    public double getDefuzzificationROM() {
+        double result = Double.MIN_VALUE;
+        double maxMu = 0;
+        for (Map.Entry<Double, Double> entry : set.entrySet()) {
+            if (entry.getValue() >= maxMu) {
+                maxMu = entry.getValue();
+                if (entry.getKey() > result) {
+                    result = entry.getKey();
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns a result of defuzzification for the current fuzzy set.
+     * Implements Mean of Maximums algorithm.
+     *
+     * @return see description.
+     */
+    public double getDefuzzificationMOM() {
+        double maxMu = 0;
+        for (Double mu : set.values()) {
+            if (mu > maxMu) {
+                maxMu = mu;
+            }
+        }
+        double sum = 0;
+        double length = 0;
+        for (Map.Entry<Double, Double> entry : set.entrySet()) {
+            if (entry.getValue() == maxMu) {
+                sum += entry.getKey();
+                length++;
+            }
+        }
+        return sum / length;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        FuzzySetCalculator that = (FuzzySetCalculator) o;
+        FuzzySet that = (FuzzySet) o;
 
         return !(set != null ? !set.equals(that.set) : that.set != null);
     }
 
     @Override
     public String toString() {
-        return "FuzzySetCalculator{" +
+        return "FuzzySet{" +
             "set=" + set +
             ", core=" + core +
             ", transitionPoint=" + transitionPoint +
@@ -557,6 +677,9 @@ public class FuzzySetCalculator {
             ", entropy=" + entropy +
             ", convex=" + convex +
             ", concave=" + concave +
+            ", addition=" + addition +
+            ", concentration=" + concentration +
+            ", stretching=" + stretching +
             '}';
     }
 }

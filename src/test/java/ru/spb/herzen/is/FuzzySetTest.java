@@ -18,7 +18,7 @@ import static org.junit.Assert.assertTrue;
  * JIT optimization.
  */
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
-public class FuzzySetCalculatorTest {
+public class FuzzySetTest {
 
     private static final Map<Double, Double> FUZZY_SET1 = new LinkedHashMap<Double, Double>() {{
         put(1.0, 0.6);
@@ -36,14 +36,14 @@ public class FuzzySetCalculatorTest {
 
     @Test
     public void testGetCore() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET1);
+        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
         List<Double> core = calculator.getCore();
         assertEquals(0, core.size());
     }
 
     @Test
     public void testGetCore2() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET2);
+        FuzzySet calculator = new FuzzySet(FUZZY_SET2);
         List<Double> core = calculator.getCore();
         assertEquals(2, core.size());
         assertEquals(1.0, core.get(0));
@@ -52,7 +52,7 @@ public class FuzzySetCalculatorTest {
 
     @Test
     public void testGetTransitionPoint() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET1);
+        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
         List<Double> transitionPoint = calculator.getTransitionPoint();
         assertEquals(1, transitionPoint.size());
         assertEquals(2.0, transitionPoint.get(0));
@@ -60,7 +60,7 @@ public class FuzzySetCalculatorTest {
 
     @Test
     public void testGetTransitionPoint2() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET2);
+        FuzzySet calculator = new FuzzySet(FUZZY_SET2);
         List<Double> transitionPoint = calculator.getTransitionPoint();
         assertEquals(1, transitionPoint.size());
         assertEquals(3.0, transitionPoint.get(0));
@@ -68,21 +68,21 @@ public class FuzzySetCalculatorTest {
 
     @Test
     public void testGetHeight() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET1);
+        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
         double height = calculator.getHeight();
         assertEquals(0.8, height);
     }
 
     @Test
     public void testGetHeight2() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET2);
+        FuzzySet calculator = new FuzzySet(FUZZY_SET2);
         double height = calculator.getHeight();
         assertEquals(1.0, height);
     }
 
     @Test
     public void testGetSupport() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET1);
+        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
         List<Double> support = calculator.getSupport();
         assertEquals(4, support.size());
         assertEquals(1.0, support.get(0));
@@ -93,7 +93,7 @@ public class FuzzySetCalculatorTest {
 
     @Test
     public void testGetSupport2() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET2);
+        FuzzySet calculator = new FuzzySet(FUZZY_SET2);
         List<Double> support = calculator.getSupport();
         assertEquals(3, support.size());
         assertEquals(3.0, support.get(0));
@@ -103,7 +103,7 @@ public class FuzzySetCalculatorTest {
 
     @Test
     public void testNormalize() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET1);
+        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
         assertEquals(0.8, calculator.getHeight());
         Map<Double, Double> normalizedSet = calculator.normalize();
         System.out.println("NORMALIZED FUZZY SET:");
@@ -118,7 +118,7 @@ public class FuzzySetCalculatorTest {
 
     @Test
     public void testNormalize2() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET2);
+        FuzzySet calculator = new FuzzySet(FUZZY_SET2);
         assertEquals(1.0, calculator.getHeight());
         Map<Double, Double> normalizedSet = calculator.normalize();
         System.out.println("NORMALIZED FUZZY SET:");
@@ -129,14 +129,14 @@ public class FuzzySetCalculatorTest {
 
     @Test
     public void testGetHammingDistance() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET1);
+        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
         double hammingDistance = calculator.getHammingDistance(FUZZY_SET2);
         assertEquals(1.1, hammingDistance);
     }
 
     @Test
     public void testGetHammingDistance2() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(new LinkedHashMap<Double, Double>() {{
+        FuzzySet calculator = new FuzzySet(new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.1);
             put(2.0, 0.5);
             put(9.0, 1.0);
@@ -153,14 +153,14 @@ public class FuzzySetCalculatorTest {
 
     @Test
     public void testGetEuclideanDistance() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET1);
+        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
         double euclideanDistance = calculator.getEuclideanDistance(FUZZY_SET2);
         assertEquals(0.624, euclideanDistance);
     }
 
     @Test
     public void testGetEuclideanDistance2() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(new LinkedHashMap<Double, Double>() {{
+        FuzzySet calculator = new FuzzySet(new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.0);
             put(2.0, 0.8);
             put(9.0, 0.3);
@@ -181,7 +181,7 @@ public class FuzzySetCalculatorTest {
 
     @Test
     public void testGetNearestSet() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET1);
+        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
         List<Integer> nearestSet = calculator.getNearestClearSet();
         List<Integer> expected = Arrays.asList(1, 0, 0, 1, 0);
         Assert.assertEquals(expected, nearestSet);
@@ -189,7 +189,7 @@ public class FuzzySetCalculatorTest {
 
     @Test
     public void testGetNearestSet2() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET2);
+        FuzzySet calculator = new FuzzySet(FUZZY_SET2);
         List<Integer> nearestSet = calculator.getNearestClearSet();
         List<Integer> expected = Arrays.asList(0, 1, 0, 1);
         Assert.assertEquals(expected, nearestSet);
@@ -197,21 +197,21 @@ public class FuzzySetCalculatorTest {
 
     @Test
     public void testGetEntropy() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET1);
+        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
         double entropy = calculator.getEntropy();
         assertEquals(0.74, entropy);
     }
 
     @Test
     public void testGetEntropy2() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET2);
+        FuzzySet calculator = new FuzzySet(FUZZY_SET2);
         double entropy = calculator.getEntropy();
         assertEquals(0.58, entropy);
     }
 
     @Test
     public void testGetEntropy3() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(new LinkedHashMap<Double, Double>() {{
+        FuzzySet calculator = new FuzzySet(new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.7);
             put(2.0, 0.9);
             put(3.0, 0.0);
@@ -225,19 +225,19 @@ public class FuzzySetCalculatorTest {
 
     @Test
     public void testIsConvex() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET1);
+        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
         assertFalse(calculator.isConvex());
     }
 
     @Test
     public void testIsConvex2() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET2);
+        FuzzySet calculator = new FuzzySet(FUZZY_SET2);
         assertFalse(calculator.isConvex());
     }
 
     @Test
     public void testIsConvex3() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(new LinkedHashMap<Double, Double>() {{
+        FuzzySet calculator = new FuzzySet(new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.5);
             put(2.0, 0.7);
             put(3.0, 0.6);
@@ -247,7 +247,7 @@ public class FuzzySetCalculatorTest {
 
     @Test
     public void testIsConvex4() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(new LinkedHashMap<Double, Double>() {{
+        FuzzySet calculator = new FuzzySet(new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.7);
             put(2.0, 0.5);
         }});
@@ -256,19 +256,19 @@ public class FuzzySetCalculatorTest {
 
     @Test
     public void testIsConcave() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET1);
+        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
         assertFalse(calculator.isConcave());
     }
 
     @Test
     public void testIsConcave2() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(FUZZY_SET2);
+        FuzzySet calculator = new FuzzySet(FUZZY_SET2);
         assertTrue(calculator.isConcave());
     }
 
     @Test
     public void testIsConcave3() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(new LinkedHashMap<Double, Double>() {{
+        FuzzySet calculator = new FuzzySet(new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.5);
             put(2.0, 0.3);
             put(4.0, 0.6);
@@ -278,7 +278,7 @@ public class FuzzySetCalculatorTest {
 
     @Test
     public void testIsConcave4() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(new LinkedHashMap<Double, Double>() {{
+        FuzzySet calculator = new FuzzySet(new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.5);
             put(2.0, 0.7);
             put(4.0, 0.6);
@@ -288,7 +288,7 @@ public class FuzzySetCalculatorTest {
 
     @Test
     public void testIsConcave5() {
-        FuzzySetCalculator calculator = new FuzzySetCalculator(new LinkedHashMap<Double, Double>() {{
+        FuzzySet calculator = new FuzzySet(new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.5);
             put(2.0, 0.3);
         }});
