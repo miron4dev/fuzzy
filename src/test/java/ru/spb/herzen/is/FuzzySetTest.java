@@ -5,10 +5,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -297,5 +294,293 @@ public class FuzzySetTest {
 
     private void assertEquals(double expected, double actual) {
         Assert.assertEquals(expected, actual, 0.01);
+    }
+
+    @Test
+    public void testGetAddition() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        Map<Double, Double> result = fuzzySet.getAddition();
+        Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
+            put(1.0, 0.4);
+            put(2.0, 0.5);
+            put(4.0, 1.0);
+            put(8.0, 0.19999999999999996);
+            put(9.0, 0.7);
+        }};
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void testGetUnionMax() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        Map<Double, Double> result = fuzzySet.getUnionMax(FUZZY_SET2);
+        Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
+            put(1.0, 1.0);
+            put(8.0, 1.0);
+        }};
+        Assert.assertEquals(expected, result);
+
+    }
+
+    @Test
+    public void testGetIntersectionMax() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        Map<Double, Double> result = fuzzySet.getIntersectionMax(FUZZY_SET2);
+        Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
+            put(1.0, 0.6);
+            put(8.0, 0.8);
+        }};
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void testDeductMax() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        Map<Double, Double> result = fuzzySet.deductMax(FUZZY_SET2);
+        Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
+            put(1.0, 0.0);
+            put(8.0, 0.0);
+        }};
+        Assert.assertEquals(expected, result);
+
+    }
+
+    @Test
+    public void testGetUnionAlg() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        Map<Double, Double> result = fuzzySet.getUnionAlg(FUZZY_SET2);
+        Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
+            put(1.0, 1.0);
+            put(8.0, 1.0);
+        }};
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void testGetIntersectionAlg() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        Map<Double, Double> result = fuzzySet.getIntersectionAlg(FUZZY_SET2);
+        Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
+            put(1.0, 0.6);
+            put(8.0, 0.8);
+        }};
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void testDeductAlg() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        Map<Double, Double> result = fuzzySet.deductAlg(FUZZY_SET2);
+        Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
+            put(1.0, 0.0);
+            put(8.0, 0.0);
+        }};
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void testSymmetricDeduction1Alg() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        Map<Double, Double> result = fuzzySet.symmetricDeduction1Alg(FUZZY_SET2);
+        Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
+            put(1.0, 0.2500000000000001);
+            put(8.0, 0.0);
+        }};
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void testSymmetricDeduction2Alg() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        Map<Double, Double> result = fuzzySet.symmetricDeduction2Alg(FUZZY_SET2);
+        Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
+            put(1.0, 0.2500000000000001);
+            put(8.0, 0.0);
+        }};
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void testGetUnionLim() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        Map<Double, Double> result = fuzzySet.getUnionLim(FUZZY_SET2);
+        Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
+            put(1.0, 0.5);
+            put(8.0, 0.3);
+        }};
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void testGetIntersectionLim() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        Map<Double, Double> result = fuzzySet.getIntersectionLim(FUZZY_SET2);
+        Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
+            put(1.0, 0.6000000000000001);
+            put(8.0, 0.8);
+        }};
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void testDeductLim() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        Map<Double, Double> result = fuzzySet.deductLim(FUZZY_SET2);
+        Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
+            put(1.0, 0.0);
+            put(8.0, 0.0);
+        }};
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void testSymmetricDeduction1Lim() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        Map<Double, Double> result = fuzzySet.symmetricDeduction1Lim(FUZZY_SET2);
+        Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
+            put(1.0, 0.25);
+            put(8.0, 0.0);
+        }};
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void testSymmetricDeduction2Lim() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        Map<Double, Double> result = fuzzySet.symmetricDeduction2Lim(FUZZY_SET2);
+        Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
+            put(1.0, 0.0);
+            put(8.0, 0.0);
+        }};
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void testGetConcentration() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        Map<Double, Double> result = fuzzySet.getConcentration();
+        Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
+            put(1.0, 0.36);
+            put(2.0, 0.25);
+            put(4.0, 0.0);
+            put(8.0, 0.6400000000000001);
+            put(9.0, 0.09);
+        }};
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void testGetStretching() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        Map<Double, Double> result = fuzzySet.getStretching();
+        Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
+            put(1.0, 0.7745966692414834);
+            put(2.0, 0.7071067811865476);
+            put(4.0, 0.0);
+            put(8.0, 0.8944271909999159);
+            put(9.0, 0.5477225575051661);
+        }};
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void testGetAlphaCut() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        List<Double> result = fuzzySet.getAlphaCut(0.5);
+        List<Double> expected = new ArrayList<Double>() {{
+            add(1.0);
+            add(2.0);
+            add(8.0);
+        }};
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void testGetStrictAlphaCut() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        List<Double> result = fuzzySet.getStrictAlphaCut(0.5);
+        List<Double> expected = new ArrayList<Double>() {{
+            add(1.0);
+            add(8.0);
+        }};
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void testIsDominate() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        assertTrue(fuzzySet.isDominate(FUZZY_SET2));
+    }
+
+    @Test
+    public void testGetDefuzzificationCOG() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        double result = fuzzySet.getDefuzzificationCOG();
+
+        assertEquals(4.863636363636363, result);
+    }
+
+    @Test
+    public void testGetDefuzzificationCOA() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        double result = fuzzySet.getDefuzzificationCOA();
+
+        assertEquals(8.0, result);
+    }
+
+    @Test
+    public void testGetDefuzzificationLOM() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        double result = fuzzySet.getDefuzzificationLOM();
+
+        assertEquals(1.0, result);
+    }
+
+    @Test
+    public void testGetDefuzzificationROM() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        double result = fuzzySet.getDefuzzificationROM();
+
+        assertEquals(8.0, result);
+
+    }
+
+    @Test
+    public void testGetDefuzzificationMOM() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+
+        double result = fuzzySet.getDefuzzificationMOM();
+
+        assertEquals(8.0, result);
+
+    }
+
+    @Test
+    public void testEquals() throws Exception {
+        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
+        assertTrue(fuzzySet.equals(new FuzzySet(FUZZY_SET1)));
     }
 }

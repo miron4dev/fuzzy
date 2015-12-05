@@ -420,7 +420,7 @@ public class FuzzySet {
         Map<Double, Double> result = new HashMap<>();
         for (Map.Entry<Double, Double> entry : anotherSet.entrySet()) {
             if (set.containsKey(entry.getKey())) {
-                result.put(entry.getKey(), Math.max(0, set.get(entry.getKey() + entry.getValue() - 1)));
+                result.put(entry.getKey(), Math.max(0, set.get(entry.getKey()) + entry.getValue() - 1));
             }
         }
         return result;
@@ -531,7 +531,7 @@ public class FuzzySet {
      */
     public boolean isDominate(Map<Double, Double> anotherSet) {
         for (Map.Entry<Double, Double> entry : anotherSet.entrySet()) {
-            if (entry.getValue() < set.get(entry.getKey())) {
+            if (set.containsKey(entry.getKey()) && entry.getValue() <= set.get(entry.getKey())) {
                 return false;
             }
         }
@@ -573,7 +573,7 @@ public class FuzzySet {
         return result;
     }
 
-    public double getPartialSumResidual(double x) {
+    private double getPartialSumResidual(double x) {
         Map<Double, Double> sortedSet = new TreeMap<>(set);
         double firstSum = 0;
         double secondSum = 0;
