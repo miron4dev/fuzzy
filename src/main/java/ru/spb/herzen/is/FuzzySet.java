@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  */
 public class FuzzySet {
 
-    private final Map<Double, Double> set;
+    protected final Map<Double, Double> set;
 
     private List<Double> core;
     private List<Double> transitionPoint;
@@ -52,15 +52,6 @@ public class FuzzySet {
         addition = getAddition();
         concentration = getConcentration();
         stretching = getStretching();
-    }
-
-    /**
-     * Returns the fuzzy set.
-     *
-     * @return see description.
-     */
-    public Map<Double, Double> getSet() {
-        return set;
     }
 
     /**
@@ -666,96 +657,6 @@ public class FuzzySet {
             }
         }
         return sum / length;
-    }
-
-    /**
-     * Returns a result of addition specified and another sets.
-     *
-     * @param anotherSet an another fuzzy set.
-     * @return see description.
-     */
-    public Map<Double, Double> add(Map<Double, Double> anotherSet) {
-        return action(anotherSet, (first, second) -> first + second);
-    }
-
-    /**
-     * Returns a result of subtraction specified and another sets.
-     *
-     * @param anotherSet an another fuzzy set.
-     * @return see description.
-     */
-    public Map<Double, Double> subtract(Map<Double, Double> anotherSet) {
-        return action(anotherSet, (first, second) -> first - second);
-    }
-
-    /**
-     * Returns a result of multiplication of the current and specified set.
-     *
-     * @param anotherSet an another fuzzy set.
-     * @return see description.
-     */
-    public Map<Double, Double> multiply(Map<Double, Double> anotherSet) {
-        return action(anotherSet, (first, second) -> first * second);
-    }
-
-    /**
-     * Returns a result of division of the current and specified set.
-     *
-     * @param anotherSet an another fuzzy set.
-     * @return see description.
-     */
-    public Map<Double, Double> divide(Map<Double, Double> anotherSet) {
-        return action(anotherSet, (first, second) -> first / second);
-    }
-
-    /**
-     * Returns an extra maximum of the current and specified set.
-     *
-     * @param anotherSet an another fuzzy set.
-     * @return see description.
-     */
-    public Map<Double, Double> extraMaximum(Map<Double, Double> anotherSet) {
-        return action(anotherSet, Math::max);
-    }
-
-    /**
-     * Returns an extra minimum of the current and specified set.
-     *
-     * @param anotherSet an another fuzzy set.
-     * @return see description.
-     */
-    public Map<Double, Double> extraMinimum(Map<Double, Double> anotherSet) {
-        return action(anotherSet, Math::min);
-    }
-
-    private Map<Double, Double> action(Map<Double, Double> anotherSet, BiFunction<Double, Double, Double> function) {
-        Map<Double, Double> result = new TreeMap<>();
-        for (Map.Entry<Double, Double> entrySet : set.entrySet()) {
-            for (Map.Entry<Double, Double> anotherEntrySet : anotherSet.entrySet()) {
-                double key = function.apply(entrySet.getKey(), anotherEntrySet.getKey());
-                double value = Math.min(entrySet.getValue(), anotherEntrySet.getValue());
-                if (result.containsKey(key)) {
-                    double oldValue = result.get(key);
-                    value = Math.max(value, oldValue);
-                }
-                result.put(key, value);
-            }
-        }
-        return result;
-    }
-
-    public static void main(String[] args) {
-        Map<Double, Double> a1 = new TreeMap<Double, Double>() {{
-            put(2.0, 0.7);
-            put(3.0, 1.0);
-            put(4.0, 0.6);
-        }};
-        Map<Double, Double> a2 = new TreeMap<Double, Double>() {{
-            put(3.0, 0.8);
-            put(4.0, 1.0);
-            put(6.0, 0.5);
-        }};
-        System.out.println(new FuzzySet(a1).add(a2));
     }
 
     @Override
