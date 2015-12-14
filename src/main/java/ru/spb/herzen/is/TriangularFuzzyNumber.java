@@ -7,12 +7,12 @@ package ru.spb.herzen.is;
  */
 public class TriangularFuzzyNumber {
 
-    private double modalValue;
-    private double alpha;
-    private double beta;
+    protected double lowerModal;
+    protected double alpha;
+    protected double beta;
 
-    public TriangularFuzzyNumber(double modalValue, double alpha, double beta) {
-        this.modalValue = modalValue;
+    public TriangularFuzzyNumber(double lowerModal, double alpha, double beta) {
+        this.lowerModal = lowerModal;
         this.alpha = alpha;
         this.beta = beta;
     }
@@ -25,7 +25,7 @@ public class TriangularFuzzyNumber {
      * @return see description.
      */
     public TriangularFuzzyNumber add(TriangularFuzzyNumber anotherNumber) {
-        return new TriangularFuzzyNumber(modalValue + anotherNumber.modalValue, alpha + anotherNumber.alpha, beta + anotherNumber.beta);
+        return new TriangularFuzzyNumber(lowerModal + anotherNumber.lowerModal, alpha + anotherNumber.alpha, beta + anotherNumber.beta);
     }
 
     /**
@@ -36,7 +36,7 @@ public class TriangularFuzzyNumber {
      * @return see description.
      */
     public TriangularFuzzyNumber subtract(TriangularFuzzyNumber anotherNumber) {
-        return new TriangularFuzzyNumber(modalValue - anotherNumber.modalValue, alpha + anotherNumber.beta, beta + anotherNumber.alpha);
+        return new TriangularFuzzyNumber(lowerModal - anotherNumber.lowerModal, alpha + anotherNumber.beta, beta + anotherNumber.alpha);
     }
 
     /**
@@ -47,23 +47,23 @@ public class TriangularFuzzyNumber {
      * @return see description.
      */
     public TriangularFuzzyNumber multiply(TriangularFuzzyNumber anotherNumber) {
-        double newModalValue = modalValue * anotherNumber.modalValue;
-        double newAlpha = modalValue * anotherNumber.alpha + anotherNumber.modalValue * alpha;
-        double newBeta = modalValue * anotherNumber.beta + anotherNumber.modalValue * beta;
+        double newModalValue = lowerModal * anotherNumber.lowerModal;
+        double newAlpha = lowerModal * anotherNumber.alpha + anotherNumber.lowerModal * alpha;
+        double newBeta = lowerModal * anotherNumber.beta + anotherNumber.lowerModal * beta;
         return new TriangularFuzzyNumber(newModalValue, newAlpha, newBeta);
     }
 
     /**
      * Returns a result of division current and specified numbers.
-     * At(a1, alpha1, beta1) + Bt(a2, alpha2, beta2)
+     * At(a1, alpha1, beta1) + Bt(a2, alpha2, beta2) = Ct(a1/a2, (a1*beta2+a2*alpha1)/a2^2, (a1*alpha2+a2*beta1)/a2^2)
      *
      * @param anotherNumber an another triangular fuzzy number.
      * @return see description.
      */
     public TriangularFuzzyNumber divide(TriangularFuzzyNumber anotherNumber) {
-        double newModalValue = modalValue / anotherNumber.modalValue;
-        double newAlpha = (modalValue * anotherNumber.beta + anotherNumber.modalValue * alpha) / (Math.pow(anotherNumber.alpha, 2));
-        double newBeta = (modalValue * anotherNumber.alpha + anotherNumber.modalValue * beta) / (Math.pow(anotherNumber.alpha, 2));
+        double newModalValue = lowerModal / anotherNumber.lowerModal;
+        double newAlpha = (lowerModal * anotherNumber.beta + anotherNumber.lowerModal * alpha) / (Math.pow(anotherNumber.alpha, 2));
+        double newBeta = (lowerModal * anotherNumber.alpha + anotherNumber.lowerModal * beta) / (Math.pow(anotherNumber.alpha, 2));
         return new TriangularFuzzyNumber(newModalValue, newAlpha, newBeta);
     }
 
@@ -74,8 +74,17 @@ public class TriangularFuzzyNumber {
 
         TriangularFuzzyNumber that = (TriangularFuzzyNumber) o;
 
-        if (Double.compare(that.modalValue, modalValue) != 0) return false;
+        if (Double.compare(that.lowerModal, lowerModal) != 0) return false;
         if (Double.compare(that.alpha, alpha) != 0) return false;
         return Double.compare(that.beta, beta) == 0;
+    }
+
+    @Override
+    public String toString() {
+        return "TriangularFuzzyNumber{" +
+            "lowerModal=" + lowerModal +
+            ", alpha=" + alpha +
+            ", beta=" + beta +
+            '}';
     }
 }
