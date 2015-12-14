@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <name>Fuzzy Logic Java Library</name>
-    <description>An application used for working with Fuzzy logic</description>
+    <description>An application that's used for working with Fuzzy logic</description>
     <url>https://github.com/rustock0/fuzzy</url>
 
     <developers>
