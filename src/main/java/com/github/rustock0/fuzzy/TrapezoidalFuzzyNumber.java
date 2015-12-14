@@ -1,4 +1,4 @@
-package org.github.rustock0.fuzzy;
+package com.github.rustock0.fuzzy;
 
 /**
  * Implementation of methods to work with Trapezoidal Fuzzy Numbers.
