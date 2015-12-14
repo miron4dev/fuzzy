@@ -1,4 +1,4 @@
-package ru.spb.herzen.is;
+package org.github.rustock0.fuzzysets;
 
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
@@ -565,7 +565,6 @@ public class FuzzySetTest {
         double result = fuzzySet.getDefuzzificationROM();
 
         assertEquals(8.0, result);
-
     }
 
     @Test
@@ -575,7 +574,6 @@ public class FuzzySetTest {
         double result = fuzzySet.getDefuzzificationMOM();
 
         assertEquals(8.0, result);
-
     }
 
     @Test

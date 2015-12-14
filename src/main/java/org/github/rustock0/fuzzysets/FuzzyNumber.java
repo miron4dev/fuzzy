@@ -1,4 +1,4 @@
-package ru.spb.herzen.is;
+package org.github.rustock0.fuzzysets;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -100,4 +100,5 @@ public class FuzzyNumber extends FuzzySet {
         }
         return result;
     }
+
 }

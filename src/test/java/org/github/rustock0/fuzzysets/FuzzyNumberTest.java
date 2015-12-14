@@ -1,6 +1,5 @@
-package ru.spb.herzen.is;
+package org.github.rustock0.fuzzysets;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Map;
@@ -31,7 +30,7 @@ public class FuzzyNumberTest {
             put(9.0, 0.5);
             put(10.0, 0.5);
         }};
-        Assert.assertEquals(expected, fuzzyNumber.add(anotherNumber));
+        assertEquals(expected, fuzzyNumber.add(anotherNumber));
         assertTrue(fuzzyNumber.isConvex());
         assertTrue(fuzzyNumber.getHeight() == 1.0);
     }
@@ -57,7 +56,7 @@ public class FuzzyNumberTest {
             put(0.0, 0.8);
             put(1.0, 0.6);
         }};
-        Assert.assertEquals(expected, fuzzyNumber.subtract(anotherNumber));
+        assertEquals(expected, fuzzyNumber.subtract(anotherNumber));
         assertTrue(fuzzyNumber.isConvex());
         assertTrue(fuzzyNumber.getHeight() == 1.0);
     }
@@ -84,7 +83,7 @@ public class FuzzyNumberTest {
             put(18.0, 0.5);
             put(24.0, 0.5);
         }};
-        Assert.assertEquals(expected, fuzzyNumber.multiply(anotherNumber));
+        assertEquals(expected, fuzzyNumber.multiply(anotherNumber));
         assertTrue(fuzzyNumber.isConvex());
         assertTrue(fuzzyNumber.getHeight() == 1.0);
     }
@@ -110,7 +109,7 @@ public class FuzzyNumberTest {
             put(1.0, 0.8);
             put(1.3333333333333333, 0.6);
         }};
-        Assert.assertEquals(expected, fuzzyNumber.divide(anotherNumber));
+        assertEquals(expected, fuzzyNumber.divide(anotherNumber));
         assertTrue(fuzzyNumber.isConvex());
         assertTrue(fuzzyNumber.getHeight() == 1.0);
     }
@@ -132,7 +131,7 @@ public class FuzzyNumberTest {
             put(1.0, 1.0);
             put(2.0, 0.2);
         }};
-        Assert.assertEquals(expected, fuzzyNumber.extraMaximum(anotherNumber));
+        assertEquals(expected, fuzzyNumber.extraMaximum(anotherNumber));
     }
 
     @Test
@@ -152,7 +151,7 @@ public class FuzzyNumberTest {
             put(0.0, 1.0);
             put(1.0, 0.1);
         }};
-        Assert.assertEquals(expected, fuzzyNumber.extraMinimum(anotherNumber));
+        assertEquals(expected, fuzzyNumber.extraMinimum(anotherNumber));
     }
 
 }

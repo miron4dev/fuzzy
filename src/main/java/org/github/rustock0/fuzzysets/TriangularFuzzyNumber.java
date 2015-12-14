@@ -1,4 +1,4 @@
-package ru.spb.herzen.is;
+package org.github.rustock0.fuzzysets;
 
 /**
  * Implementation of methods to work with Triangular Fuzzy Numbers.

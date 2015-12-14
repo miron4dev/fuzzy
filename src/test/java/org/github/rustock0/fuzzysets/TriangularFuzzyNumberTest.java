@@ -1,4 +1,4 @@
-package ru.spb.herzen.is;
+package org.github.rustock0.fuzzysets;
 
 import org.junit.Test;
 
