@@ -1,4 +1,4 @@
-package org.github.rustock0.fuzzysets;
+package org.github.rustock0.fuzzy;
 
 /**
  * Implementation of methods to work with Triangular Fuzzy Numbers.

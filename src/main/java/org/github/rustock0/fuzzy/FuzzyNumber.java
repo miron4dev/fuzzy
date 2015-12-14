@@ -1,4 +1,4 @@
-package org.github.rustock0.fuzzysets;
+package org.github.rustock0.fuzzy;
 
 import java.util.Map;
 import java.util.TreeMap;
