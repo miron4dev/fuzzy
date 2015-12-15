@@ -17,31 +17,29 @@ import static org.junit.Assert.assertTrue;
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
 public class FuzzySetTest {
 
-    private static final Map<Double, Double> FUZZY_SET1 = new LinkedHashMap<Double, Double>() {{
+    private static final FuzzySet FUZZY_SET1 = new FuzzySet(new LinkedHashMap<Double, Double>() {{
         put(1.0, 0.6);
         put(2.0, 0.5);
         put(9.0, 0.3);
         put(8.0, 0.8);
         put(4.0, 0.0);
-    }};
-    private static final Map<Double, Double> FUZZY_SET2 = new LinkedHashMap<Double, Double>() {{
+    }});
+    private static final FuzzySet FUZZY_SET2 = new FuzzySet(new LinkedHashMap<Double, Double>() {{
         put(3.0, 0.5);
         put(1.0, 1.0);
         put(5.0, 0.0);
         put(8.0, 1.0);
-    }};
+    }});
 
     @Test
     public void testGetCore() {
-        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
-        List<Double> core = calculator.getCore();
+        List<Double> core = FUZZY_SET1.getCore();
         assertEquals(0, core.size());
     }
 
     @Test
     public void testGetCore2() {
-        FuzzySet calculator = new FuzzySet(FUZZY_SET2);
-        List<Double> core = calculator.getCore();
+        List<Double> core = FUZZY_SET2.getCore();
         assertEquals(2, core.size());
         assertEquals(1.0, core.get(0));
         assertEquals(8.0, core.get(1));
@@ -49,38 +47,33 @@ public class FuzzySetTest {
 
     @Test
     public void testGetTransitionPoint() {
-        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
-        List<Double> transitionPoint = calculator.getTransitionPoint();
+        List<Double> transitionPoint = FUZZY_SET1.getTransitionPoint();
         assertEquals(1, transitionPoint.size());
         assertEquals(2.0, transitionPoint.get(0));
     }
 
     @Test
     public void testGetTransitionPoint2() {
-        FuzzySet calculator = new FuzzySet(FUZZY_SET2);
-        List<Double> transitionPoint = calculator.getTransitionPoint();
+        List<Double> transitionPoint = FUZZY_SET2.getTransitionPoint();
         assertEquals(1, transitionPoint.size());
         assertEquals(3.0, transitionPoint.get(0));
     }
 
     @Test
     public void testGetHeight() {
-        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
-        double height = calculator.getHeight();
+        double height = FUZZY_SET1.getHeight();
         assertEquals(0.8, height);
     }
 
     @Test
     public void testGetHeight2() {
-        FuzzySet calculator = new FuzzySet(FUZZY_SET2);
-        double height = calculator.getHeight();
+        double height = FUZZY_SET2.getHeight();
         assertEquals(1.0, height);
     }
 
     @Test
     public void testGetSupport() {
-        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
-        List<Double> support = calculator.getSupport();
+        List<Double> support = FUZZY_SET1.getSupport();
         assertEquals(4, support.size());
         assertEquals(1.0, support.get(0));
         assertEquals(2.0, support.get(1));
@@ -90,8 +83,7 @@ public class FuzzySetTest {
 
     @Test
     public void testGetSupport2() {
-        FuzzySet calculator = new FuzzySet(FUZZY_SET2);
-        List<Double> support = calculator.getSupport();
+        List<Double> support = FUZZY_SET2.getSupport();
         assertEquals(3, support.size());
         assertEquals(3.0, support.get(0));
         assertEquals(1.0, support.get(1));
@@ -100,34 +92,31 @@ public class FuzzySetTest {
 
     @Test
     public void testNormalize() {
-        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
-        assertEquals(0.8, calculator.getHeight());
-        Map<Double, Double> normalizedSet = calculator.normalize();
+        assertEquals(0.8, FUZZY_SET1.getHeight());
+        FuzzySet normalizedSet = FUZZY_SET1.normalize();
         System.out.println("NORMALIZED FUZZY SET:");
         System.out.println(normalizedSet);
-        assertEquals(1.0, calculator.getHeight());
-        assertEquals(0.75, normalizedSet.get(1.0));
-        assertEquals(0.625, normalizedSet.get(2.0));
-        assertEquals(0.375, normalizedSet.get(9.0));
-        assertEquals(1.0, normalizedSet.get(8.0));
-        assertEquals(0.0, normalizedSet.get(4.0));
+        assertEquals(1.0, FUZZY_SET1.getHeight());
+        assertEquals(0.75, normalizedSet.set.get(1.0));
+        assertEquals(0.625, normalizedSet.set.get(2.0));
+        assertEquals(0.375, normalizedSet.set.get(9.0));
+        assertEquals(1.0, normalizedSet.set.get(8.0));
+        assertEquals(0.0, normalizedSet.set.get(4.0));
     }
 
     @Test
     public void testNormalize2() {
-        FuzzySet calculator = new FuzzySet(FUZZY_SET2);
-        assertEquals(1.0, calculator.getHeight());
-        Map<Double, Double> normalizedSet = calculator.normalize();
+        assertEquals(1.0, FUZZY_SET2.getHeight());
+        FuzzySet normalizedSet = FUZZY_SET2.normalize();
         System.out.println("NORMALIZED FUZZY SET:");
         System.out.println(normalizedSet);
-        assertEquals(1.0, calculator.getHeight());
+        assertEquals(1.0, FUZZY_SET2.getHeight());
         Assert.assertEquals(FUZZY_SET2, normalizedSet);
     }
 
     @Test
     public void testGetHammingDistance() {
-        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
-        double hammingDistance = calculator.getHammingDistance(FUZZY_SET2);
+        double hammingDistance = FUZZY_SET1.getHammingDistance(FUZZY_SET2);
         assertEquals(1.1, hammingDistance);
     }
 
@@ -139,19 +128,18 @@ public class FuzzySetTest {
             put(9.0, 1.0);
             put(8.0, 0.0);
         }});
-        double hammingDistance = calculator.getHammingDistance(new LinkedHashMap<Double, Double>() {{
+        double hammingDistance = calculator.getHammingDistance(new FuzzySet(new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.0);
             put(2.0, 0.2);
             put(9.0, 1.0);
             put(8.0, 0.7);
-        }});
+        }}));
         assertEquals(1.1, hammingDistance);
     }
 
     @Test
     public void testGetEuclideanDistance() {
-        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
-        double euclideanDistance = calculator.getEuclideanDistance(FUZZY_SET2);
+        double euclideanDistance = FUZZY_SET1.getEuclideanDistance(FUZZY_SET2);
         assertEquals(0.624, euclideanDistance);
     }
 
@@ -165,44 +153,40 @@ public class FuzzySetTest {
             put(8.0, 0.9);
             put(14.0, 1.0);
         }});
-        double euclideanDistance = calculator.getEuclideanDistance(new LinkedHashMap<Double, Double>() {{
+        double euclideanDistance = calculator.getEuclideanDistance(new FuzzySet(new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.0);
             put(2.0, 0.2);
             put(9.0, 0.6);
             put(3.0, 0.1);
             put(8.0, 1.0);
-        }});
+        }}));
         System.out.println(euclideanDistance);
         assertEquals(1.307, euclideanDistance);
     }
 
     @Test
     public void testGetNearestSet() {
-        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
-        List<Integer> nearestSet = calculator.getNearestClearSet();
+        List<Integer> nearestSet = FUZZY_SET1.getNearestClearSet();
         List<Integer> expected = Arrays.asList(1, 0, 0, 1, 0);
         Assert.assertEquals(expected, nearestSet);
     }
 
     @Test
     public void testGetNearestSet2() {
-        FuzzySet calculator = new FuzzySet(FUZZY_SET2);
-        List<Integer> nearestSet = calculator.getNearestClearSet();
+        List<Integer> nearestSet = FUZZY_SET2.getNearestClearSet();
         List<Integer> expected = Arrays.asList(0, 1, 0, 1);
         Assert.assertEquals(expected, nearestSet);
     }
 
     @Test
     public void testGetEntropy() {
-        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
-        double entropy = calculator.getEntropy();
+        double entropy = FUZZY_SET1.getEntropy();
         assertEquals(0.74, entropy);
     }
 
     @Test
     public void testGetEntropy2() {
-        FuzzySet calculator = new FuzzySet(FUZZY_SET2);
-        double entropy = calculator.getEntropy();
+        double entropy = FUZZY_SET2.getEntropy();
         assertEquals(0.58, entropy);
     }
 
@@ -222,14 +206,12 @@ public class FuzzySetTest {
 
     @Test
     public void testIsConvex() {
-        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
-        assertFalse(calculator.isConvex());
+        assertFalse(FUZZY_SET1.isConvex());
     }
 
     @Test
     public void testIsConvex2() {
-        FuzzySet calculator = new FuzzySet(FUZZY_SET2);
-        assertFalse(calculator.isConvex());
+        assertFalse(FUZZY_SET2.isConvex());
     }
 
     @Test
@@ -253,14 +235,12 @@ public class FuzzySetTest {
 
     @Test
     public void testIsConcave() {
-        FuzzySet calculator = new FuzzySet(FUZZY_SET1);
-        assertFalse(calculator.isConcave());
+        assertFalse(FUZZY_SET1.isConcave());
     }
 
     @Test
     public void testIsConcave2() {
-        FuzzySet calculator = new FuzzySet(FUZZY_SET2);
-        assertTrue(calculator.isConcave());
+        assertTrue(FUZZY_SET2.isConcave());
     }
 
     @Test
@@ -298,9 +278,8 @@ public class FuzzySetTest {
 
     @Test
     public void testGetAddition() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
 
-        Map<Double, Double> result = fuzzySet.getAddition();
+        Map<Double, Double> result = FUZZY_SET1.getAddition();
         Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.4);
             put(2.0, 0.5);
@@ -313,167 +292,142 @@ public class FuzzySetTest {
 
     @Test
     public void testGetUnionMax() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
 
-        Map<Double, Double> result = fuzzySet.getUnionMax(FUZZY_SET2);
+       FuzzySet result = FUZZY_SET1.getUnionMax(FUZZY_SET2);
         Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
             put(1.0, 1.0);
             put(8.0, 1.0);
         }};
-        Assert.assertEquals(expected, result);
+        Assert.assertEquals(expected, result.set);
 
     }
 
     @Test
     public void testGetIntersectionMax() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
 
-        Map<Double, Double> result = fuzzySet.getIntersectionMax(FUZZY_SET2);
+        FuzzySet result = FUZZY_SET1.getIntersectionMax(FUZZY_SET2);
         Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.6);
             put(8.0, 0.8);
         }};
-        Assert.assertEquals(expected, result);
+        Assert.assertEquals(expected, result.set);
     }
 
     @Test
     public void testDeductMax() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
-
-        Map<Double, Double> result = fuzzySet.deductMax(FUZZY_SET2);
+        FuzzySet result = FUZZY_SET1.deductMax(FUZZY_SET2);
         Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.0);
             put(8.0, 0.0);
         }};
-        Assert.assertEquals(expected, result);
+        Assert.assertEquals(expected, result.set);
 
     }
 
     @Test
     public void testGetUnionAlg() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
 
-        Map<Double, Double> result = fuzzySet.getUnionAlg(FUZZY_SET2);
+        FuzzySet result = FUZZY_SET1.getUnionAlg(FUZZY_SET2);
         Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
             put(1.0, 1.0);
             put(8.0, 1.0);
         }};
-        Assert.assertEquals(expected, result);
+        Assert.assertEquals(expected, result.set);
     }
 
     @Test
     public void testGetIntersectionAlg() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
-
-        Map<Double, Double> result = fuzzySet.getIntersectionAlg(FUZZY_SET2);
+        FuzzySet result = FUZZY_SET1.getIntersectionAlg(FUZZY_SET2);
         Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.6);
             put(8.0, 0.8);
         }};
-        Assert.assertEquals(expected, result);
+        Assert.assertEquals(expected, result.set);
     }
 
     @Test
     public void testDeductAlg() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
-
-        Map<Double, Double> result = fuzzySet.deductAlg(FUZZY_SET2);
+        FuzzySet result = FUZZY_SET1.deductAlg(FUZZY_SET2);
         Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.0);
             put(8.0, 0.0);
         }};
-        Assert.assertEquals(expected, result);
+        Assert.assertEquals(expected, result.set);
     }
 
     @Test
     public void testSymmetricDeduction1Alg() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
-
-        Map<Double, Double> result = fuzzySet.symmetricDeduction1Alg(FUZZY_SET2);
+        FuzzySet result = FUZZY_SET1.symmetricDeduction1Alg(FUZZY_SET2);
         Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
-            put(1.0, 0.2500000000000001);
-            put(8.0, 0.0);
+            put(1.0, 0.4);
+            put(8.0, 0.19999999999999996);
         }};
-        Assert.assertEquals(expected, result);
+        Assert.assertEquals(expected, result.set);
     }
 
     @Test
     public void testSymmetricDeduction2Alg() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
-
-        Map<Double, Double> result = fuzzySet.symmetricDeduction2Alg(FUZZY_SET2);
+        FuzzySet result = FUZZY_SET1.symmetricDeduction2Alg(FUZZY_SET2);
         Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.2500000000000001);
             put(8.0, 0.0);
         }};
-        Assert.assertEquals(expected, result);
+        Assert.assertEquals(expected, result.set);
     }
 
     @Test
     public void testGetUnionLim() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
-
-        Map<Double, Double> result = fuzzySet.getUnionLim(FUZZY_SET2);
+        FuzzySet result = FUZZY_SET1.getUnionLim(FUZZY_SET2);
         Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.5);
             put(8.0, 0.3);
         }};
-        Assert.assertEquals(expected, result);
+        Assert.assertEquals(expected, result.set);
     }
 
     @Test
     public void testGetIntersectionLim() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
-
-        Map<Double, Double> result = fuzzySet.getIntersectionLim(FUZZY_SET2);
+        FuzzySet result = FUZZY_SET1.getIntersectionLim(FUZZY_SET2);
         Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.6000000000000001);
             put(8.0, 0.8);
         }};
-        Assert.assertEquals(expected, result);
+        Assert.assertEquals(expected, result.set);
     }
 
     @Test
     public void testDeductLim() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
-
-        Map<Double, Double> result = fuzzySet.deductLim(FUZZY_SET2);
+        FuzzySet result = FUZZY_SET1.deductLim(FUZZY_SET2);
         Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.0);
             put(8.0, 0.0);
         }};
-        Assert.assertEquals(expected, result);
+        Assert.assertEquals(expected, result.set);
     }
 
     @Test
     public void testSymmetricDeduction1Lim() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
-
-        Map<Double, Double> result = fuzzySet.symmetricDeduction1Lim(FUZZY_SET2);
+        FuzzySet result = FUZZY_SET1.symmetricDeduction1Lim(FUZZY_SET2);
         Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
-            put(1.0, 0.25);
-            put(8.0, 0.0);
+            put(1.0, 0.3999999999999999);
+            put(8.0, 0.19999999999999996);
         }};
-        Assert.assertEquals(expected, result);
+        Assert.assertEquals(expected, result.set);
     }
 
     @Test
     public void testSymmetricDeduction2Lim() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
-
-        Map<Double, Double> result = fuzzySet.symmetricDeduction2Lim(FUZZY_SET2);
+        FuzzySet result = FUZZY_SET1.symmetricDeduction2Lim(FUZZY_SET2);
         Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.0);
             put(8.0, 0.0);
         }};
-        Assert.assertEquals(expected, result);
+        Assert.assertEquals(expected, result.set);
     }
 
     @Test
     public void testGetConcentration() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
-
-        Map<Double, Double> result = fuzzySet.getConcentration();
+        Map<Double, Double> result = FUZZY_SET1.getConcentration();
         Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.36);
             put(2.0, 0.25);
@@ -486,9 +440,7 @@ public class FuzzySetTest {
 
     @Test
     public void testGetStretching() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
-
-        Map<Double, Double> result = fuzzySet.getStretching();
+        Map<Double, Double> result = FUZZY_SET1.getStretching();
         Map<Double, Double> expected = new LinkedHashMap<Double, Double>() {{
             put(1.0, 0.7745966692414834);
             put(2.0, 0.7071067811865476);
@@ -501,9 +453,7 @@ public class FuzzySetTest {
 
     @Test
     public void testGetAlphaCut() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
-
-        List<Double> result = fuzzySet.getAlphaCut(0.5);
+        List<Double> result = FUZZY_SET1.getAlphaCut(0.5);
         List<Double> expected = new ArrayList<Double>() {{
             add(1.0);
             add(2.0);
@@ -514,9 +464,7 @@ public class FuzzySetTest {
 
     @Test
     public void testGetStrictAlphaCut() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
-
-        List<Double> result = fuzzySet.getStrictAlphaCut(0.5);
+        List<Double> result = FUZZY_SET1.getStrictAlphaCut(0.5);
         List<Double> expected = new ArrayList<Double>() {{
             add(1.0);
             add(8.0);
@@ -526,59 +474,46 @@ public class FuzzySetTest {
 
     @Test
     public void testIsDominate() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
-
-        assertTrue(fuzzySet.isDominate(FUZZY_SET2));
+        assertTrue(FUZZY_SET1.isDominate(FUZZY_SET2));
     }
 
     @Test
     public void testGetDefuzzificationCOG() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
-
-        double result = fuzzySet.getDefuzzificationCOG();
+        double result = FUZZY_SET1.getDefuzzificationCOG();
 
         assertEquals(4.863636363636363, result);
     }
 
     @Test
     public void testGetDefuzzificationCOA() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
-
-        double result = fuzzySet.getDefuzzificationCOA();
+        double result = FUZZY_SET1.getDefuzzificationCOA();
 
         assertEquals(8.0, result);
     }
 
     @Test
     public void testGetDefuzzificationLOM() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
-
-        double result = fuzzySet.getDefuzzificationLOM();
+        double result = FUZZY_SET1.getDefuzzificationLOM();
 
         assertEquals(1.0, result);
     }
 
     @Test
     public void testGetDefuzzificationROM() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
-
-        double result = fuzzySet.getDefuzzificationROM();
+        double result = FUZZY_SET1.getDefuzzificationROM();
 
         assertEquals(8.0, result);
     }
 
     @Test
     public void testGetDefuzzificationMOM() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
-
-        double result = fuzzySet.getDefuzzificationMOM();
+        double result = FUZZY_SET1.getDefuzzificationMOM();
 
         assertEquals(8.0, result);
     }
 
     @Test
     public void testEquals() throws Exception {
-        FuzzySet fuzzySet = new FuzzySet(FUZZY_SET1);
-        assertTrue(fuzzySet.equals(new FuzzySet(FUZZY_SET1)));
+        assertTrue(FUZZY_SET1.equals(FUZZY_SET1));
     }
 }

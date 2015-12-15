@@ -111,14 +111,14 @@ public class FuzzySet {
      *
      * @return a normalized fuzzy set.
      */
-    public Map<Double, Double> normalize() {
+    public FuzzySet normalize() {
         if (getHeight() != 1.0) {
             for (Map.Entry<Double, Double> entry : set.entrySet()) {
                 set.put(entry.getKey(), entry.getValue() / height);
             }
             height = 1.0;
         }
-        return set;
+        return this;
     }
 
     /**
@@ -127,10 +127,10 @@ public class FuzzySet {
      * @param anotherSet an another fuzzy set.
      * @return see description.
      */
-    public double getHammingDistance(final Map<Double, Double> anotherSet) {
+    public double getHammingDistance(final FuzzySet anotherSet) {
         double distance = 0.0;
         Iterator<Double> setIter = set.values().iterator();
-        Iterator<Double> anotherSetIter = anotherSet.values().iterator();
+        Iterator<Double> anotherSetIter = anotherSet.set.values().iterator();
         while (setIter.hasNext() && anotherSetIter.hasNext()) {
             distance += Math.abs(setIter.next() - anotherSetIter.next());
         }
@@ -146,10 +146,10 @@ public class FuzzySet {
      * @param anotherSet an another fuzzy set.
      * @return see description.
      */
-    public double getEuclideanDistance(final Map<Double, Double> anotherSet) {
+    public double getEuclideanDistance(final FuzzySet anotherSet) {
         double distance = 0.0;
         Iterator<Double> setIter = set.values().iterator();
-        Iterator<Double> anotherSetIter = anotherSet.values().iterator();
+        Iterator<Double> anotherSetIter = anotherSet.set.values().iterator();
         while (setIter.hasNext() && anotherSetIter.hasNext()) {
             distance += Math.pow(setIter.next() - anotherSetIter.next(), 2);
         }
@@ -281,14 +281,14 @@ public class FuzzySet {
      * @param anotherSet an another fuzzy set.
      * @return see description.
      */
-    public Map<Double, Double> getUnionMax(Map<Double, Double> anotherSet) {
+    public FuzzySet getUnionMax(FuzzySet anotherSet) {
         Map<Double, Double> result = new HashMap<>();
-        for (Map.Entry<Double, Double> entry : anotherSet.entrySet()) {
+        for (Map.Entry<Double, Double> entry : anotherSet.set.entrySet()) {
             if (set.containsKey(entry.getKey())) {
                 result.put(entry.getKey(), Math.max(entry.getValue(), set.get(entry.getKey())));
             }
         }
-        return result;
+        return new FuzzySet(result);
     }
 
     /**
@@ -298,14 +298,14 @@ public class FuzzySet {
      * @param anotherSet an another fuzzy set.
      * @return see description.
      */
-    public Map<Double, Double> getIntersectionMax(Map<Double, Double> anotherSet) {
+    public FuzzySet getIntersectionMax(FuzzySet anotherSet) {
         Map<Double, Double> result = new HashMap<>();
-        for (Map.Entry<Double, Double> entry : anotherSet.entrySet()) {
+        for (Map.Entry<Double, Double> entry : anotherSet.set.entrySet()) {
             if (set.containsKey(entry.getKey())) {
                 result.put(entry.getKey(), Math.min(entry.getValue(), set.get(entry.getKey())));
             }
         }
-        return result;
+        return new FuzzySet(result);
     }
 
     /**
@@ -315,8 +315,8 @@ public class FuzzySet {
      * @param anotherSet an another fuzzy set.
      * @return result of deduction.
      */
-    public Map<Double, Double> deductMax(Map<Double, Double> anotherSet) {
-        return getIntersectionMax(new FuzzySet(anotherSet).getAddition());
+    public FuzzySet deductMax(FuzzySet anotherSet) {
+        return getIntersectionMax(new FuzzySet(anotherSet.getAddition()));
     }
 
     /**
@@ -326,16 +326,16 @@ public class FuzzySet {
      * @param anotherSet an another fuzzy set.
      * @return see description.
      */
-    public Map<Double, Double> getUnionAlg(Map<Double, Double> anotherSet) {
+    public FuzzySet getUnionAlg(FuzzySet anotherSet) {
         Map<Double, Double> result = new HashMap<>();
-        for (Map.Entry<Double, Double> entry : anotherSet.entrySet()) {
+        for (Map.Entry<Double, Double> entry : anotherSet.set.entrySet()) {
             if (set.containsKey(entry.getKey())) {
                 double mua = set.get(entry.getKey());
                 double mub = entry.getValue();
                 result.put(entry.getKey(), mua + mub - mua * mub);
             }
         }
-        return result;
+        return new FuzzySet(result);
     }
 
     /**
@@ -345,16 +345,16 @@ public class FuzzySet {
      * @param anotherSet an another fuzzy set.
      * @return see description.
      */
-    public Map<Double, Double> getIntersectionAlg(Map<Double, Double> anotherSet) {
+    public FuzzySet getIntersectionAlg(FuzzySet anotherSet) {
         Map<Double, Double> result = new HashMap<>();
-        for (Map.Entry<Double, Double> entry : anotherSet.entrySet()) {
+        for (Map.Entry<Double, Double> entry : anotherSet.set.entrySet()) {
             if (set.containsKey(entry.getKey())) {
                 double mua = set.get(entry.getKey());
                 double mub = entry.getValue();
                 result.put(entry.getKey(), mua * mub);
             }
         }
-        return result;
+        return new FuzzySet(result);
     }
 
     /**
@@ -364,8 +364,8 @@ public class FuzzySet {
      * @param anotherSet an another fuzzy set.
      * @return result of deduction.
      */
-    public Map<Double, Double> deductAlg(Map<Double, Double> anotherSet) {
-        return getIntersectionAlg(new FuzzySet(anotherSet).getAddition());
+    public FuzzySet deductAlg(FuzzySet anotherSet) {
+        return getIntersectionAlg(new FuzzySet(anotherSet.getAddition()));
     }
 
     /**
@@ -374,10 +374,10 @@ public class FuzzySet {
      * @param anotherSet an another fuzzy set.
      * @return results of deduction.
      */
-    public Map<Double, Double> symmetricDeduction1Alg(Map<Double, Double> anotherSet) {
-        Map<Double, Double> abDeduction = deductAlg(anotherSet);
-        Map<Double, Double> baDeduction = new FuzzySet(anotherSet).deductAlg(set);
-        return new FuzzySet(abDeduction).getUnionAlg(baDeduction);
+    public FuzzySet symmetricDeduction1Alg(FuzzySet anotherSet) {
+        FuzzySet abDeduction = deductAlg(anotherSet);
+        FuzzySet baDeduction = anotherSet.deductAlg(this);
+        return abDeduction.getUnionAlg(baDeduction);
     }
 
     /**
@@ -386,10 +386,10 @@ public class FuzzySet {
      * @param anotherSet an another fuzzy set.
      * @return results of deduction.
      */
-    public Map<Double, Double> symmetricDeduction2Alg(Map<Double, Double> anotherSet) {
-        Map<Double, Double> aPlusB = getUnionAlg(anotherSet);
-        Map<Double, Double> aBIntersection = getIntersectionAlg(anotherSet);
-        return new FuzzySet(aPlusB).deductAlg(aBIntersection);
+    public FuzzySet symmetricDeduction2Alg(FuzzySet anotherSet) {
+        FuzzySet aPlusB = getUnionAlg(anotherSet);
+        FuzzySet aBIntersection = getIntersectionAlg(anotherSet);
+        return aPlusB.deductAlg(aBIntersection);
     }
 
     /**
@@ -399,14 +399,14 @@ public class FuzzySet {
      * @param anotherSet an another fuzzy set.
      * @return see description.
      */
-    public Map<Double, Double> getUnionLim(Map<Double, Double> anotherSet) {
+    public FuzzySet getUnionLim(FuzzySet anotherSet) {
         Map<Double, Double> result = new HashMap<>();
-        for (Map.Entry<Double, Double> entry : anotherSet.entrySet()) {
+        for (Map.Entry<Double, Double> entry : anotherSet.set.entrySet()) {
             if (set.containsKey(entry.getKey())) {
                 result.put(entry.getKey(), Math.min(1, set.get(entry.getKey() + entry.getValue())));
             }
         }
-        return result;
+        return new FuzzySet(result);
     }
 
     /**
@@ -416,14 +416,14 @@ public class FuzzySet {
      * @param anotherSet an another fuzzy set.
      * @return see description.
      */
-    public Map<Double, Double> getIntersectionLim(Map<Double, Double> anotherSet) {
+    public FuzzySet getIntersectionLim(FuzzySet anotherSet) {
         Map<Double, Double> result = new HashMap<>();
-        for (Map.Entry<Double, Double> entry : anotherSet.entrySet()) {
+        for (Map.Entry<Double, Double> entry : anotherSet.set.entrySet()) {
             if (set.containsKey(entry.getKey())) {
                 result.put(entry.getKey(), Math.max(0, set.get(entry.getKey()) + entry.getValue() - 1));
             }
         }
-        return result;
+        return new FuzzySet(result);
     }
 
     /**
@@ -433,8 +433,8 @@ public class FuzzySet {
      * @param anotherSet an another fuzzy set.
      * @return result of deduction.
      */
-    public Map<Double, Double> deductLim(Map<Double, Double> anotherSet) {
-        return getIntersectionLim(new FuzzySet(anotherSet).getAddition());
+    public FuzzySet deductLim(FuzzySet anotherSet) {
+        return getIntersectionLim(new FuzzySet(anotherSet.getAddition()));
     }
 
     /**
@@ -443,10 +443,10 @@ public class FuzzySet {
      * @param anotherSet an another fuzzy set.
      * @return results of deduction.
      */
-    public Map<Double, Double> symmetricDeduction1Lim(Map<Double, Double> anotherSet) {
-        Map<Double, Double> abDeduction = deductLim(anotherSet);
-        Map<Double, Double> baDeduction = new FuzzySet(anotherSet).deductLim(set);
-        return new FuzzySet(abDeduction).getUnionAlg(baDeduction);
+    public FuzzySet symmetricDeduction1Lim(FuzzySet anotherSet) {
+        FuzzySet abDeduction = deductLim(anotherSet);
+        FuzzySet baDeduction = anotherSet.deductLim(this);
+        return abDeduction.getUnionAlg(baDeduction);
     }
 
     /**
@@ -455,10 +455,10 @@ public class FuzzySet {
      * @param anotherSet an another fuzzy set.
      * @return results of deduction.
      */
-    public Map<Double, Double> symmetricDeduction2Lim(Map<Double, Double> anotherSet) {
-        Map<Double, Double> aPlusB = getUnionLim(anotherSet);
-        Map<Double, Double> aBIntersection = getIntersectionLim(anotherSet);
-        return new FuzzySet(aPlusB).deductLim(aBIntersection);
+    public FuzzySet symmetricDeduction2Lim(FuzzySet anotherSet) {
+        FuzzySet aPlusB = getUnionLim(anotherSet);
+        FuzzySet aBIntersection = getIntersectionLim(anotherSet);
+        return aPlusB.deductLim(aBIntersection);
     }
 
     /**
@@ -529,8 +529,8 @@ public class FuzzySet {
      * @param anotherSet an another fuzzy set.
      * @return see description.
      */
-    public boolean isDominate(Map<Double, Double> anotherSet) {
-        for (Map.Entry<Double, Double> entry : anotherSet.entrySet()) {
+    public boolean isDominate(FuzzySet anotherSet) {
+        for (Map.Entry<Double, Double> entry : anotherSet.set.entrySet()) {
             if (set.containsKey(entry.getKey()) && entry.getValue() <= set.get(entry.getKey())) {
                 return false;
             }
