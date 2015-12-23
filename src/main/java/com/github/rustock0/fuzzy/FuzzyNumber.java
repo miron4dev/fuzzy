@@ -21,7 +21,7 @@ public class FuzzyNumber extends FuzzySet {
      * @param anotherNumber an another fuzzy number.
      * @return see description.
      */
-    public Map<Double, Double> add(FuzzyNumber anotherNumber) {
+    public FuzzyNumber add(FuzzyNumber anotherNumber) {
         return action(anotherNumber, (first, second) -> first + second);
     }
 
@@ -31,7 +31,7 @@ public class FuzzyNumber extends FuzzySet {
      * @param anotherNumber an another fuzzy number.
      * @return see description.
      */
-    public Map<Double, Double> subtract(FuzzyNumber anotherNumber) {
+    public FuzzyNumber subtract(FuzzyNumber anotherNumber) {
         return action(anotherNumber, (first, second) -> first - second);
     }
 
@@ -41,7 +41,7 @@ public class FuzzyNumber extends FuzzySet {
      * @param anotherNumber an another fuzzy number.
      * @return see description.
      */
-    public Map<Double, Double> multiply(FuzzyNumber anotherNumber) {
+    public FuzzyNumber multiply(FuzzyNumber anotherNumber) {
         return action(anotherNumber, (first, second) -> first * second);
     }
 
@@ -51,7 +51,7 @@ public class FuzzyNumber extends FuzzySet {
      * @param anotherNumber an another fuzzy number.
      * @return see description.
      */
-    public Map<Double, Double> divide(FuzzyNumber anotherNumber) {
+    public FuzzyNumber divide(FuzzyNumber anotherNumber) {
         return action(anotherNumber, (first, second) -> first / second);
     }
 
@@ -61,7 +61,7 @@ public class FuzzyNumber extends FuzzySet {
      * @param anotherNumber an another fuzzy number.
      * @return see description.
      */
-    public Map<Double, Double> extraMaximum(FuzzyNumber anotherNumber) {
+    public FuzzyNumber extraMaximum(FuzzyNumber anotherNumber) {
         return action(anotherNumber, Math::max);
     }
 
@@ -71,13 +71,13 @@ public class FuzzyNumber extends FuzzySet {
      * @param anotherNumber an another fuzzy number.
      * @return see description.
      */
-    public Map<Double, Double> extraMinimum(FuzzyNumber anotherNumber) {
+    public FuzzyNumber extraMinimum(FuzzyNumber anotherNumber) {
         return action(anotherNumber, Math::min);
     }
 
     /**
      * Returns a result of next expression:
-     * A1 action A2 = (sup {(x1, x2) | x1 function x2}; min {mu(x1), mu(x2)})
+     * A1 function A2 = (sup {(x1, x2) | x1 function x2}; min {mu(x1), mu(x2)})
      * where A1 is the current fuzzy number and A2 is a specified fuzzy number,
      * and action is a specified function, e.g. A1*A2.
      *
@@ -85,7 +85,7 @@ public class FuzzyNumber extends FuzzySet {
      * @param function   function for calculation, e.g. A1*A2.
      * @return see description.
      */
-    private Map<Double, Double> action(FuzzyNumber anotherSet, BiFunction<Double, Double, Double> function) {
+    private FuzzyNumber action(FuzzyNumber anotherSet, BiFunction<Double, Double, Double> function) {
         Map<Double, Double> result = new TreeMap<>();
         for (Map.Entry<Double, Double> entrySet : set.entrySet()) {
             for (Map.Entry<Double, Double> anotherEntrySet : anotherSet.set.entrySet()) {
@@ -98,7 +98,6 @@ public class FuzzyNumber extends FuzzySet {
                 result.put(key, value);
             }
         }
-        return result;
+        return new FuzzyNumber(result);
     }
-
 }
