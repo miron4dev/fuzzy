@@ -54,10 +54,10 @@ public class TrapezoidalFuzzyNumberTest {
 
     @Test
     public void testMultiply_negative_negative() throws Exception {
-        TrapezoidalFuzzyNumber number = new TrapezoidalFuzzyNumber(-3, 5, 1, 2);
-        TrapezoidalFuzzyNumber anotherNumber = new TrapezoidalFuzzyNumber(-1, 2, 2, 1);
+        TrapezoidalFuzzyNumber number = new TrapezoidalFuzzyNumber(-3, -5, 1, 2);
+        TrapezoidalFuzzyNumber anotherNumber = new TrapezoidalFuzzyNumber(-1, -2, 2, 1);
 
-        TrapezoidalFuzzyNumber expected = new TrapezoidalFuzzyNumber(3, 10, 2, -6);
+        TrapezoidalFuzzyNumber expected = new TrapezoidalFuzzyNumber(3, 10, 5, 12);
         assertEquals(expected, number.multiply(anotherNumber));
     }
 
