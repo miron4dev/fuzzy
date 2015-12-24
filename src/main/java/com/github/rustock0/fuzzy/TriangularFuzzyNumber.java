@@ -41,15 +41,40 @@ public class TriangularFuzzyNumber {
 
     /**
      * Returns a result of multiplication current and specified numbers.
+     * 1) if (a1 > 0 and a2 > 0)
      * At(a1, alpha1, beta1) * Bt(a2, alpha2, beta2) = Ct(a1*a2, a1*alpha2 + a2*alpha1, a1*beta2 + a2*beta1)
+     * 2) if (a1 < 0 and a2 > 0)
+     * At(a1, alpha1, beta1) * Bt(a2, alpha2, beta2) = Ct(a1*a2, a2*alpha1 - a1*beta2, a2*beta1 - a1*alpha2)
+     * 3) if (a1 <0 and a2 < 0)
+     * At(a1, alpha1, beta1) * Bt(a2, alpha2, beta2) = Ct(a1*a2, -a2*beta1-a1*beta2, -a2*alpha1 - a1*alpha2)
+     * 4) else
+     * At(a1, alpha1, beta1) * Bt(a2, alpha2, beta2) = Ct(0, 0, 0)
      *
      * @param anotherNumber an another triangular fuzzy number.
      * @return see description.
      */
     public TriangularFuzzyNumber multiply(TriangularFuzzyNumber anotherNumber) {
-        double newModalValue = lowerModal * anotherNumber.lowerModal;
-        double newAlpha = lowerModal * anotherNumber.alpha + anotherNumber.lowerModal * alpha;
-        double newBeta = lowerModal * anotherNumber.beta + anotherNumber.lowerModal * beta;
+        double newModalValue;
+        double newAlpha;
+        double newBeta;
+        if (lowerModal > 0 && anotherNumber.lowerModal > 0) {
+            newModalValue = lowerModal * anotherNumber.lowerModal;
+            newAlpha = lowerModal * anotherNumber.alpha + anotherNumber.lowerModal * alpha;
+            newBeta = lowerModal * anotherNumber.beta + anotherNumber.lowerModal * beta;
+        } else if (lowerModal < 0 && anotherNumber.lowerModal > 0) {
+            newModalValue = lowerModal * anotherNumber.lowerModal;
+            newAlpha = anotherNumber.lowerModal * alpha - lowerModal * anotherNumber.beta;
+            newBeta = anotherNumber.lowerModal * beta - lowerModal * anotherNumber.alpha;
+        } else if (lowerModal < 0 && anotherNumber.lowerModal < 0) {
+            newModalValue = lowerModal * anotherNumber.lowerModal;
+            newAlpha = (-1) * anotherNumber.lowerModal * beta - lowerModal * anotherNumber.beta;
+            newBeta = (-1) * anotherNumber.lowerModal * alpha - lowerModal * anotherNumber.alpha;
+        } else {
+            //TODO?
+            newModalValue = 0;
+            newAlpha = 0;
+            newBeta = 0;
+        }
         return new TriangularFuzzyNumber(newModalValue, newAlpha, newBeta);
     }
 
@@ -62,8 +87,8 @@ public class TriangularFuzzyNumber {
      */
     public TriangularFuzzyNumber divide(TriangularFuzzyNumber anotherNumber) {
         double newModalValue = lowerModal / anotherNumber.lowerModal;
-        double newAlpha = (lowerModal * anotherNumber.beta + anotherNumber.lowerModal * alpha) / (Math.pow(anotherNumber.alpha, 2));
-        double newBeta = (lowerModal * anotherNumber.alpha + anotherNumber.lowerModal * beta) / (Math.pow(anotherNumber.alpha, 2));
+        double newAlpha = (lowerModal * anotherNumber.beta + anotherNumber.lowerModal * alpha) / (Math.pow(anotherNumber.lowerModal, 2));
+        double newBeta = (lowerModal * anotherNumber.alpha + anotherNumber.lowerModal * beta) / (Math.pow(anotherNumber.lowerModal, 2));
         return new TriangularFuzzyNumber(newModalValue, newAlpha, newBeta);
     }
 
