@@ -39,7 +39,7 @@ public class TriangularFuzzyNumberTest {
         TriangularFuzzyNumber number = new TriangularFuzzyNumber(3, 1, 2);
         TriangularFuzzyNumber another = new TriangularFuzzyNumber(-2, 2, 1);
 
-        TriangularFuzzyNumber expected = new TriangularFuzzyNumber(6, 8, 7);
+        TriangularFuzzyNumber expected = new TriangularFuzzyNumber(-6, -5, -10);
         assertEquals(expected, number.multiply(another));
     }
 

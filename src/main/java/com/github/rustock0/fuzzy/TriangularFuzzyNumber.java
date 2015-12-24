@@ -1,5 +1,7 @@
 package com.github.rustock0.fuzzy;
 
+import java.util.function.Function;
+
 /**
  * Implementation of methods to work with Triangular Fuzzy Numbers.
  *
@@ -41,14 +43,12 @@ public class TriangularFuzzyNumber {
 
     /**
      * Returns a result of multiplication current and specified numbers.
-     * 1) if (a1 > 0 and a2 > 0)
+     * 1) if a1 and a2 are positive
      * At(a1, alpha1, beta1) * Bt(a2, alpha2, beta2) = Ct(a1*a2, a1*alpha2 + a2*alpha1, a1*beta2 + a2*beta1)
-     * 2) if (a1 < 0 and a2 > 0)
-     * At(a1, alpha1, beta1) * Bt(a2, alpha2, beta2) = Ct(a1*a2, a2*alpha1 - a1*beta2, a2*beta1 - a1*alpha2)
-     * 3) if (a1 <0 and a2 < 0)
+     * 2) if a1 and a2 are negative
      * At(a1, alpha1, beta1) * Bt(a2, alpha2, beta2) = Ct(a1*a2, -a2*beta1-a1*beta2, -a2*alpha1 - a1*alpha2)
-     * 4) else
-     * At(a1, alpha1, beta1) * Bt(a2, alpha2, beta2) = Ct(0, 0, 0)
+     * 3) else
+     * At(a1, alpha1, beta1) * Bt(a2, alpha2, beta2) = Ct(a1*a2, a2*alpha1 - a1*beta2, a2*beta1 - a1*alpha2)
      *
      * @param anotherNumber an another triangular fuzzy number.
      * @return see description.
@@ -57,23 +57,18 @@ public class TriangularFuzzyNumber {
         double newModalValue;
         double newAlpha;
         double newBeta;
-        if (lowerModal > 0 && anotherNumber.lowerModal > 0) {
+        if (isPositive(lowerModal, anotherNumber.lowerModal)) {
             newModalValue = lowerModal * anotherNumber.lowerModal;
             newAlpha = lowerModal * anotherNumber.alpha + anotherNumber.lowerModal * alpha;
             newBeta = lowerModal * anotherNumber.beta + anotherNumber.lowerModal * beta;
-        } else if (lowerModal < 0 && anotherNumber.lowerModal > 0) {
-            newModalValue = lowerModal * anotherNumber.lowerModal;
-            newAlpha = anotherNumber.lowerModal * alpha - lowerModal * anotherNumber.beta;
-            newBeta = anotherNumber.lowerModal * beta - lowerModal * anotherNumber.alpha;
-        } else if (lowerModal < 0 && anotherNumber.lowerModal < 0) {
+        } else if (isNegative(lowerModal, anotherNumber.lowerModal)) {
             newModalValue = lowerModal * anotherNumber.lowerModal;
             newAlpha = (-1) * anotherNumber.lowerModal * beta - lowerModal * anotherNumber.beta;
             newBeta = (-1) * anotherNumber.lowerModal * alpha - lowerModal * anotherNumber.alpha;
         } else {
-            //TODO?
-            newModalValue = 0;
-            newAlpha = 0;
-            newBeta = 0;
+            newModalValue = lowerModal * anotherNumber.lowerModal;
+            newAlpha = anotherNumber.lowerModal * alpha - lowerModal * anotherNumber.beta;
+            newBeta = anotherNumber.lowerModal * beta - lowerModal * anotherNumber.alpha;
         }
         return new TriangularFuzzyNumber(newModalValue, newAlpha, newBeta);
     }
@@ -90,6 +85,35 @@ public class TriangularFuzzyNumber {
         double newAlpha = (lowerModal * anotherNumber.beta + anotherNumber.lowerModal * alpha) / (Math.pow(anotherNumber.lowerModal, 2));
         double newBeta = (lowerModal * anotherNumber.alpha + anotherNumber.lowerModal * beta) / (Math.pow(anotherNumber.lowerModal, 2));
         return new TriangularFuzzyNumber(newModalValue, newAlpha, newBeta);
+    }
+
+    /**
+     * Returns true if the all specified set contains only positive digits.
+     *
+     * @param digits set of digits.
+     * @return see description.
+     */
+    protected boolean isPositive(Double... digits) {
+        return compare(x -> x > 0, digits);
+    }
+
+    /**
+     * Returns true if the all specified set contains only negative digits.
+     *
+     * @param digits set of digits.
+     * @return see description.
+     */
+    protected boolean isNegative(Double... digits) {
+        return compare(x -> x < 0, digits);
+    }
+
+    private boolean compare(Function<Double, Boolean> function, Double... digits) {
+        for (Double digit : digits) {
+            if (!function.apply(digit)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

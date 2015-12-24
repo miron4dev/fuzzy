@@ -40,16 +40,37 @@ public class TrapezoidalFuzzyNumber extends TriangularFuzzyNumber {
 
     /**
      * Returns a result of multiplication current and specified numbers.
+     * 1) if all modal values are positive
      * At(a1, b1, alpha1, beta1) * Bt(a2, b2, alpha2, beta2) = Ct(a1*a2, b1*b2, a1*alpha2+a2*alpha1, b1*beta2+b2*beta1)
+     * 2) if all modal values are negative
+     * At(a1, alpha1, beta1) * Bt(a2, alpha2, beta2) = Ct(a1*a2, b1*b2, -a2*beta1-a1*beta2, -b2*alpha1 - b1*alpha2)
+     * 3) else
+     * At(a1, alpha1, beta1) * Bt(a2, alpha2, beta2) = Ct(a1*a2, b1*b2, a2*alpha1 - a1*beta2, b2*beta1 - b1*alpha2)
      *
      * @param anotherNumber an another trapezoidal fuzzy number.
      * @return see description.
      */
     public TrapezoidalFuzzyNumber multiply(TrapezoidalFuzzyNumber anotherNumber) {
-        double newLowerModal = lowerModal * anotherNumber.lowerModal;
-        double newUpperModal = upperModal * anotherNumber.upperModal;
-        double newAlpha = lowerModal * anotherNumber.alpha + anotherNumber.lowerModal * alpha;
-        double newBeta = upperModal * anotherNumber.beta + anotherNumber.upperModal * beta;
+        double newLowerModal;
+        double newUpperModal;
+        double newAlpha;
+        double newBeta;
+        if (isPositive(lowerModal, anotherNumber.lowerModal, upperModal, anotherNumber.upperModal)) {
+            newLowerModal = lowerModal * anotherNumber.lowerModal;
+            newUpperModal = upperModal * anotherNumber.upperModal;
+            newAlpha = lowerModal * anotherNumber.alpha + anotherNumber.lowerModal * alpha;
+            newBeta = upperModal * anotherNumber.beta + anotherNumber.upperModal * beta;
+        } else if (isNegative(lowerModal, anotherNumber.lowerModal, upperModal, anotherNumber.upperModal)) {
+            newLowerModal = lowerModal * anotherNumber.lowerModal;
+            newUpperModal = upperModal * anotherNumber.upperModal;
+            newAlpha = (-1) * anotherNumber.lowerModal * beta - lowerModal * anotherNumber.beta;
+            newBeta = (-1) * anotherNumber.upperModal * alpha - upperModal * anotherNumber.alpha;
+        } else {
+            newLowerModal = lowerModal * anotherNumber.lowerModal;
+            newUpperModal = upperModal * anotherNumber.upperModal;
+            newAlpha = anotherNumber.lowerModal * alpha - lowerModal * anotherNumber.beta;
+            newBeta = anotherNumber.upperModal * beta - upperModal * anotherNumber.alpha;
+        }
         return new TrapezoidalFuzzyNumber(newLowerModal, newUpperModal, newAlpha, newBeta);
     }
 

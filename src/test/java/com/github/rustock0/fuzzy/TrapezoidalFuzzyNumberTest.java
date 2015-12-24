@@ -2,6 +2,7 @@ package com.github.rustock0.fuzzy;
 
 import org.junit.Test;
 
+import static java.lang.Double.POSITIVE_INFINITY;
 import static org.junit.Assert.*;
 
 public class TrapezoidalFuzzyNumberTest {
@@ -25,11 +26,38 @@ public class TrapezoidalFuzzyNumberTest {
     }
 
     @Test
-    public void testMultiply() throws Exception {
+    public void testMultiply_positive_positive() throws Exception {
         TrapezoidalFuzzyNumber number = new TrapezoidalFuzzyNumber(3, 5, 1, 2);
         TrapezoidalFuzzyNumber anotherNumber = new TrapezoidalFuzzyNumber(1, 2, 2, 1);
 
         TrapezoidalFuzzyNumber expected = new TrapezoidalFuzzyNumber(3, 10, 7, 9);
+        assertEquals(expected, number.multiply(anotherNumber));
+    }
+
+    @Test
+    public void testMultiply_positive_negative() throws Exception {
+        TrapezoidalFuzzyNumber number = new TrapezoidalFuzzyNumber(3, 5, 1, 2);
+        TrapezoidalFuzzyNumber anotherNumber = new TrapezoidalFuzzyNumber(-1, 2, 2, 1);
+
+        TrapezoidalFuzzyNumber expected = new TrapezoidalFuzzyNumber(-3, 10, -4, -6);
+        assertEquals(expected, number.multiply(anotherNumber));
+    }
+
+    @Test
+    public void testMultiply_negative_positive() throws Exception {
+        TrapezoidalFuzzyNumber number = new TrapezoidalFuzzyNumber(-3, 5, 1, 2);
+        TrapezoidalFuzzyNumber anotherNumber = new TrapezoidalFuzzyNumber(1, 2, 2, 1);
+
+        TrapezoidalFuzzyNumber expected = new TrapezoidalFuzzyNumber(-3, 10, 4, -6);
+        assertEquals(expected, number.multiply(anotherNumber));
+    }
+
+    @Test
+    public void testMultiply_negative_negative() throws Exception {
+        TrapezoidalFuzzyNumber number = new TrapezoidalFuzzyNumber(-3, 5, 1, 2);
+        TrapezoidalFuzzyNumber anotherNumber = new TrapezoidalFuzzyNumber(-1, 2, 2, 1);
+
+        TrapezoidalFuzzyNumber expected = new TrapezoidalFuzzyNumber(3, 10, 2, -6);
         assertEquals(expected, number.multiply(anotherNumber));
     }
 
@@ -39,6 +67,24 @@ public class TrapezoidalFuzzyNumberTest {
         TrapezoidalFuzzyNumber anotherNumber = new TrapezoidalFuzzyNumber(1, 2, 2, 1);
 
         TrapezoidalFuzzyNumber expected = new TrapezoidalFuzzyNumber(1.5, 5, 1.25, 12);
+        assertEquals(expected, number.divide(anotherNumber));
+    }
+
+    @Test
+    public void testDivide_zero_a() throws Exception {
+        TrapezoidalFuzzyNumber number = new TrapezoidalFuzzyNumber(3, 5, 1, 2);
+        TrapezoidalFuzzyNumber anotherNumber = new TrapezoidalFuzzyNumber(0, 2, 2, 1);
+
+        TrapezoidalFuzzyNumber expected = new TrapezoidalFuzzyNumber(1.5, POSITIVE_INFINITY, 1.25, POSITIVE_INFINITY);
+        assertEquals(expected, number.divide(anotherNumber));
+    }
+
+    @Test
+    public void testDivide_zero_b() throws Exception {
+        TrapezoidalFuzzyNumber number = new TrapezoidalFuzzyNumber(3, 5, 1, 2);
+        TrapezoidalFuzzyNumber anotherNumber = new TrapezoidalFuzzyNumber(1, 0, 2, 1);
+
+        TrapezoidalFuzzyNumber expected = new TrapezoidalFuzzyNumber(POSITIVE_INFINITY, 5, POSITIVE_INFINITY, 12);
         assertEquals(expected, number.divide(anotherNumber));
     }
 }
