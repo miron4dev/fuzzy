@@ -71,4 +71,48 @@ public class FuzzyRelationTest {
 
         assertFalse(fuzzyRelation.isAntiSymmetric());
     }
+
+    @Test
+    public void testAddition() throws Exception {
+        FuzzyRelation fuzzyRelation = new FuzzyRelation(new double[][]{{1.0, 0.0, 0.3}, {0.0, 0.0, 0.3}, {0.3, 0.2, 1.0}});
+        FuzzyRelation anotherRelation = new FuzzyRelation(new double[][]{{0.0, 0.5, 0.2}, {0.1, 0.6, 0.8}, {0.9, 0.5, 0.0}});
+
+        FuzzyRelation expected = new FuzzyRelation(new double[][]{{1.0, 0.5, 0.3}, {0.1, 0.6, 0.8}, {0.9, 0.5, 1.0}});
+        assertEquals(expected, fuzzyRelation.addition(anotherRelation));
+    }
+
+    @Test
+    public void testIntersection() throws Exception {
+        FuzzyRelation fuzzyRelation = new FuzzyRelation(new double[][]{{1.0, 0.0, 0.3}, {0.0, 0.0, 0.3}, {0.3, 0.2, 1.0}});
+        FuzzyRelation anotherRelation = new FuzzyRelation(new double[][]{{0.0, 0.5, 0.2}, {0.1, 0.6, 0.8}, {0.9, 0.5, 0.0}});
+
+        FuzzyRelation expected = new FuzzyRelation(new double[][]{{0.0, 0.0, 0.2}, {0.0, 0.0, 0.3}, {0.3, 0.2, 0.0}});
+        assertEquals(expected, fuzzyRelation.intersection(anotherRelation));
+    }
+
+    @Test
+    public void testUnion() throws Exception {
+        FuzzyRelation fuzzyRelation = new FuzzyRelation(new double[][]{{1.0, 0.0, 0.3}, {0.0, 0.0, 0.3}, {0.3, 0.2, 1.0}});
+        FuzzyRelation anotherRelation = new FuzzyRelation(new double[][]{{0.0, 0.5, 0.2}, {0.1, 0.6, 0.8}, {0.9, 0.5, 0.0}});
+
+        FuzzyRelation expected = new FuzzyRelation(new double[][]{{1.0, 0.0, 0.3}, {0.0, 0.0, 0.2}, {0.01, 0.2, 1.0}});
+        assertEquals(expected, fuzzyRelation.union(anotherRelation));
+    }
+
+    @Test
+    public void testDeduct() throws Exception {
+        FuzzyRelation fuzzyRelation = new FuzzyRelation(new double[][]{{1.0, 0.0, 0.3}, {0.0, 0.0, 0.3}, {0.3, 0.2, 1.0}});
+        FuzzyRelation anotherRelation = new FuzzyRelation(new double[][]{{0.0, 0.5, 0.2}, {0.1, 0.6, 0.8}, {0.9, 0.5, 0.0}});
+
+        FuzzyRelation expected = new FuzzyRelation(new double[][]{{1.0, 0.5, 0.3}, {0.1, 0.6, 0.7}, {0.7, 0.5, 1.0}});
+        assertEquals(expected, fuzzyRelation.deduct(anotherRelation));
+    }
+
+    @Test
+    public void testDeductSymmetric() throws Exception {
+        FuzzyRelation fuzzyRelation = new FuzzyRelation(new double[][]{{1.0, 0.0, 0.3}, {0.0, 0.0, 0.3}, {0.3, 0.2, 1.0}});
+
+        FuzzyRelation expected = new FuzzyRelation(new double[][]{{0.0, 1.0, 0.7}, {1.0, 1.0, 0.7}, {0.7, 0.8, 0.0}});
+        assertEquals(expected, fuzzyRelation.deductSymmetric());
+    }
 }
