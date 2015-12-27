@@ -1,5 +1,8 @@
 package com.github.rustock0.fuzzy;
 
+import java.util.Objects;
+import java.util.function.BiFunction;
+
 /**
  * Implementation of methods to work with Fuzzy Relations.
  *
@@ -52,14 +55,7 @@ public class FuzzyRelation {
      * @return see description.
      */
     public boolean isSymmetric() {
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix.length; j++) {
-                if (matrix[i][j] != matrix[j][i]) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        return checkAllElements(Objects::equals);
     }
 
     /**
@@ -68,9 +64,19 @@ public class FuzzyRelation {
      * @return see description.
      */
     public boolean isAsymmetric() {
+        return checkAllElements((x, y) -> Math.min(x, y) == 0);
+    }
+
+    /**
+     * Returns true if the specified function is applicable for all elements in the current fuzzy relation.
+     *
+     * @param function some boolean function.
+     * @return see description.
+     */
+    private boolean checkAllElements(BiFunction<Double, Double, Boolean> function) {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix.length; j++) {
-                if (Math.min(matrix[i][j], matrix[j][i]) != 0) {
+                if (!function.apply(matrix[i][j], matrix[j][i])) {
                     return false;
                 }
             }
