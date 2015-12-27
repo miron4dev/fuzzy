@@ -10,81 +10,97 @@ import java.util.function.Function;
 public class TriangularFuzzyNumber {
 
     protected double lowerModal;
+    protected double upperModal;
     protected double alpha;
     protected double beta;
 
     public TriangularFuzzyNumber(double lowerModal, double alpha, double beta) {
         this.lowerModal = lowerModal;
+        this.upperModal = lowerModal;
+        this.alpha = alpha;
+        this.beta = beta;
+    }
+
+    public TriangularFuzzyNumber(double lowerModal, double upperModal, double alpha, double beta) {
+        this.lowerModal = lowerModal;
+        this.upperModal = upperModal;
         this.alpha = alpha;
         this.beta = beta;
     }
 
     /**
      * Returns a result of addition current and specified numbers.
-     * At(a1, alpha1, beta1) + Bt(a2, alpha2, beta2) = Ct(a1+a2, alpha1+alpha2, beta1+beta2)
+     * At(a1, b1, alpha1, beta1) + Bt(a2, b2, alpha2, beta2) = Ct(a1+a2, b1+b2, alpha1+alpha2, beta1+beta2)
      *
-     * @param anotherNumber an another triangular fuzzy number.
+     * @param anotherNumber an another trapezoidal fuzzy number.
      * @return see description.
      */
     public TriangularFuzzyNumber add(TriangularFuzzyNumber anotherNumber) {
-        return new TriangularFuzzyNumber(lowerModal + anotherNumber.lowerModal, alpha + anotherNumber.alpha, beta + anotherNumber.beta);
+        return new TriangularFuzzyNumber(lowerModal + anotherNumber.lowerModal, upperModal + anotherNumber.upperModal,
+                alpha + anotherNumber.alpha, beta + anotherNumber.beta);
     }
 
     /**
      * Returns a result of subtraction current and specified numbers.
-     * At(a1, alpha1, beta1) - Bt(a2, alpha2, beta2) = Ct(a1-a2, alpha1+beta2, beta1+alpha2)
+     * At(a1, b1, alpha1, beta1) - Bt(a2, b2, alpha2, beta2) = Ct(a1-a2, b1-b2, alpha1+beta2, beta1+alpha2)
      *
-     * @param anotherNumber an another triangular fuzzy number.
+     * @param anotherNumber an another trapezoidal fuzzy number.
      * @return see description.
      */
     public TriangularFuzzyNumber subtract(TriangularFuzzyNumber anotherNumber) {
-        return new TriangularFuzzyNumber(lowerModal - anotherNumber.lowerModal, alpha + anotherNumber.beta, beta + anotherNumber.alpha);
+        return new TriangularFuzzyNumber(lowerModal - anotherNumber.lowerModal, upperModal - anotherNumber.upperModal,
+                alpha + anotherNumber.beta, beta + anotherNumber.alpha);
     }
 
     /**
      * Returns a result of multiplication current and specified numbers.
-     * 1) if a1 and a2 are positive
-     * At(a1, alpha1, beta1) * Bt(a2, alpha2, beta2) = Ct(a1*a2, a1*alpha2 + a2*alpha1, a1*beta2 + a2*beta1)
-     * 2) if a1 and a2 are negative
-     * At(a1, alpha1, beta1) * Bt(a2, alpha2, beta2) = Ct(a1*a2, -a2*beta1-a1*beta2, -a2*alpha1 - a1*alpha2)
+     * 1) if all modal values are positive
+     * At(a1, b1, alpha1, beta1) * Bt(a2, b2, alpha2, beta2) = Ct(a1*a2, b1*b2, a1*alpha2+a2*alpha1, b1*beta2+b2*beta1)
+     * 2) if all modal values are negative
+     * At(a1, alpha1, beta1) * Bt(a2, alpha2, beta2) = Ct(a1*a2, b1*b2, -a2*beta1-a1*beta2, -b2*alpha1 - b1*alpha2)
      * 3) else
-     * At(a1, alpha1, beta1) * Bt(a2, alpha2, beta2) = Ct(a1*a2, a2*alpha1 - a1*beta2, a2*beta1 - a1*alpha2)
+     * At(a1, alpha1, beta1) * Bt(a2, alpha2, beta2) = Ct(a1*a2, b1*b2, a2*alpha1 - a1*beta2, b2*beta1 - b1*alpha2)
      *
-     * @param anotherNumber an another triangular fuzzy number.
+     * @param anotherNumber an another trapezoidal fuzzy number.
      * @return see description.
      */
     public TriangularFuzzyNumber multiply(TriangularFuzzyNumber anotherNumber) {
-        double newModalValue;
+        double newLowerModal;
+        double newUpperModal;
         double newAlpha;
         double newBeta;
-        if (isPositive(lowerModal, anotherNumber.lowerModal)) {
-            newModalValue = lowerModal * anotherNumber.lowerModal;
+        if (isPositive(lowerModal, anotherNumber.lowerModal, upperModal, anotherNumber.upperModal)) {
+            newLowerModal = lowerModal * anotherNumber.lowerModal;
+            newUpperModal = upperModal * anotherNumber.upperModal;
             newAlpha = lowerModal * anotherNumber.alpha + anotherNumber.lowerModal * alpha;
-            newBeta = lowerModal * anotherNumber.beta + anotherNumber.lowerModal * beta;
-        } else if (isNegative(lowerModal, anotherNumber.lowerModal)) {
-            newModalValue = lowerModal * anotherNumber.lowerModal;
+            newBeta = upperModal * anotherNumber.beta + anotherNumber.upperModal * beta;
+        } else if (isNegative(lowerModal, anotherNumber.lowerModal, upperModal, anotherNumber.upperModal)) {
+            newLowerModal = lowerModal * anotherNumber.lowerModal;
+            newUpperModal = upperModal * anotherNumber.upperModal;
             newAlpha = (-1) * anotherNumber.lowerModal * beta - lowerModal * anotherNumber.beta;
-            newBeta = (-1) * anotherNumber.lowerModal * alpha - lowerModal * anotherNumber.alpha;
+            newBeta = (-1) * anotherNumber.upperModal * alpha - upperModal * anotherNumber.alpha;
         } else {
-            newModalValue = lowerModal * anotherNumber.lowerModal;
+            newLowerModal = lowerModal * anotherNumber.lowerModal;
+            newUpperModal = upperModal * anotherNumber.upperModal;
             newAlpha = anotherNumber.lowerModal * alpha - lowerModal * anotherNumber.beta;
-            newBeta = anotherNumber.lowerModal * beta - lowerModal * anotherNumber.alpha;
+            newBeta = anotherNumber.upperModal * beta - upperModal * anotherNumber.alpha;
         }
-        return new TriangularFuzzyNumber(newModalValue, newAlpha, newBeta);
+        return new TriangularFuzzyNumber(newLowerModal, newUpperModal, newAlpha, newBeta);
     }
 
     /**
      * Returns a result of division current and specified numbers.
-     * At(a1, alpha1, beta1) + Bt(a2, alpha2, beta2) = Ct(a1/a2, (a1*beta2+a2*alpha1)/a2^2, (a1*alpha2+a2*beta1)/a2^2)
+     * At(a1, b1, alpha1, beta1) / Bt(a2, b2, alpha2, beta2) = Ct(a1/b2, b1/a2, (a1*beta2+b2*alpha1)/b2^2, (b1*alpha2 + a2*beta1)/a2^2)
      *
-     * @param anotherNumber an another triangular fuzzy number.
+     * @param anotherNumber an another trapezoidal fuzzy number.
      * @return see description.
      */
     public TriangularFuzzyNumber divide(TriangularFuzzyNumber anotherNumber) {
-        double newModalValue = lowerModal / anotherNumber.lowerModal;
-        double newAlpha = (lowerModal * anotherNumber.beta + anotherNumber.lowerModal * alpha) / (Math.pow(anotherNumber.lowerModal, 2));
-        double newBeta = (lowerModal * anotherNumber.alpha + anotherNumber.lowerModal * beta) / (Math.pow(anotherNumber.lowerModal, 2));
-        return new TriangularFuzzyNumber(newModalValue, newAlpha, newBeta);
+        double newLowerModal = lowerModal / anotherNumber.upperModal;
+        double newUpperModal = upperModal / anotherNumber.lowerModal;
+        double newAlpha = (lowerModal * anotherNumber.beta + anotherNumber.upperModal * alpha) / Math.pow(anotherNumber.upperModal, 2);
+        double newBeta = (upperModal * anotherNumber.alpha + anotherNumber.lowerModal * beta) / Math.pow(anotherNumber.lowerModal, 2);
+        return new TriangularFuzzyNumber(newLowerModal, newUpperModal, newAlpha, newBeta);
     }
 
     /**
@@ -93,7 +109,7 @@ public class TriangularFuzzyNumber {
      * @param digits set of digits.
      * @return see description.
      */
-    protected boolean isPositive(Double... digits) {
+    private boolean isPositive(Double... digits) {
         return compare(x -> x > 0, digits);
     }
 
@@ -103,7 +119,7 @@ public class TriangularFuzzyNumber {
      * @param digits set of digits.
      * @return see description.
      */
-    protected boolean isNegative(Double... digits) {
+    private boolean isNegative(Double... digits) {
         return compare(x -> x < 0, digits);
     }
 
@@ -124,6 +140,7 @@ public class TriangularFuzzyNumber {
         TriangularFuzzyNumber that = (TriangularFuzzyNumber) o;
 
         if (Double.compare(that.lowerModal, lowerModal) != 0) return false;
+        if (Double.compare(that.upperModal, upperModal) != 0) return false;
         if (Double.compare(that.alpha, alpha) != 0) return false;
         return Double.compare(that.beta, beta) == 0;
     }
