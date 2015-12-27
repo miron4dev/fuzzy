@@ -62,9 +62,36 @@ public class TriangularFuzzyNumberTest {
     }
 
     @Test
-    public void testDivide() throws Exception {
+    public void testDivide_positive_positive() throws Exception {
         TriangularFuzzyNumber number = new TriangularFuzzyNumber(3, 1, 2);
         TriangularFuzzyNumber another = new TriangularFuzzyNumber(2, 2, 1);
+
+        TriangularFuzzyNumber expected = new TriangularFuzzyNumber(1.5, 1.25, 2.5);
+        assertEquals(expected, number.divide(another));
+    }
+
+    @Test
+    public void testDivide_positive_negative() throws Exception {
+        TriangularFuzzyNumber number = new TriangularFuzzyNumber(3, 1, 2);
+        TriangularFuzzyNumber another = new TriangularFuzzyNumber(-2, 2, 1);
+
+        TriangularFuzzyNumber expected = new TriangularFuzzyNumber(-1.5, 1.25, 2.5);
+        assertEquals(expected, number.divide(another));
+    }
+
+    @Test
+    public void testDivide_negative_positive() throws Exception {
+        TriangularFuzzyNumber number = new TriangularFuzzyNumber(-3, 1, 2);
+        TriangularFuzzyNumber another = new TriangularFuzzyNumber(2, 2, 1);
+
+        TriangularFuzzyNumber expected = new TriangularFuzzyNumber(-1.5, -1.25, -2.5);
+        assertEquals(expected, number.divide(another));
+    }
+
+    @Test
+    public void testDivide_negative_negative() throws Exception {
+        TriangularFuzzyNumber number = new TriangularFuzzyNumber(-3, 1, 2);
+        TriangularFuzzyNumber another = new TriangularFuzzyNumber(-2, 2, 1);
 
         TriangularFuzzyNumber expected = new TriangularFuzzyNumber(1.5, 1.25, 2.5);
         assertEquals(expected, number.divide(another));
