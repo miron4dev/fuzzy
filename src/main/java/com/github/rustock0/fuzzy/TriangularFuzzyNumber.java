@@ -78,8 +78,16 @@ public class TriangularFuzzyNumber {
             newAlpha = (-1) * anotherNumber.lowerModal * beta - lowerModal * anotherNumber.beta;
             newBeta = (-1) * anotherNumber.upperModal * alpha - upperModal * anotherNumber.alpha;
         } else {
-            newAlpha = anotherNumber.lowerModal * alpha - lowerModal * anotherNumber.beta;
-            newBeta = anotherNumber.upperModal * beta - upperModal * anotherNumber.alpha;
+            if (lowerModal > 0 && anotherNumber.lowerModal < 0) {
+                newAlpha = -(anotherNumber.lowerModal * beta - lowerModal * anotherNumber.beta);
+            } else {
+                newAlpha = anotherNumber.lowerModal * alpha - lowerModal * anotherNumber.beta;
+            }
+            if (upperModal > 0 && anotherNumber.upperModal < 0) {
+                newBeta = -(anotherNumber.upperModal * alpha - upperModal * anotherNumber.alpha);
+            } else {
+                newBeta = anotherNumber.upperModal * beta - upperModal * anotherNumber.alpha;
+            }
         }
         return new TriangularFuzzyNumber(newLowerModal, newUpperModal, newAlpha, newBeta);
     }
@@ -102,16 +110,25 @@ public class TriangularFuzzyNumber {
         double newAlpha;
         double newBeta;
         if (isPositive(lowerModal, anotherNumber.lowerModal, upperModal, anotherNumber.upperModal)) {
-            newAlpha = (lowerModal * anotherNumber.beta + anotherNumber.upperModal * alpha) / Math.pow(anotherNumber.upperModal, 2);
-            newBeta = (upperModal * anotherNumber.alpha + anotherNumber.lowerModal * beta) / Math.pow(anotherNumber.lowerModal, 2);
+            newAlpha = lowerModal * anotherNumber.beta + anotherNumber.upperModal * alpha;
+            newBeta = upperModal * anotherNumber.alpha + anotherNumber.lowerModal * beta;
         } else if (isNegative(lowerModal, anotherNumber.lowerModal, upperModal, anotherNumber.upperModal)) {
-            newAlpha = ((-1) * lowerModal * anotherNumber.beta - anotherNumber.upperModal * alpha) / Math.pow(anotherNumber.upperModal, 2);
-            newBeta = ((-1) * upperModal * anotherNumber.alpha - anotherNumber.lowerModal * beta) / Math.pow(anotherNumber.lowerModal, 2);
+            newAlpha = (-1) * lowerModal * anotherNumber.beta - anotherNumber.upperModal * alpha;
+            newBeta = (-1) * upperModal * anotherNumber.alpha - anotherNumber.lowerModal * beta;
         } else {
-            newAlpha = (lowerModal * anotherNumber.beta - anotherNumber.upperModal * alpha) / Math.pow(anotherNumber.upperModal, 2);
-            newBeta = (upperModal * anotherNumber.alpha - anotherNumber.lowerModal * beta) / Math.pow(anotherNumber.lowerModal, 2);
+            if (lowerModal > 0 && anotherNumber.lowerModal < 0) {
+                newAlpha = -(lowerModal * anotherNumber.beta - anotherNumber.upperModal * alpha);
+            } else {
+                newAlpha = lowerModal * anotherNumber.beta - anotherNumber.upperModal * alpha;
+            }
+            if (upperModal > 0 && anotherNumber.upperModal < 0) {
+                newBeta = -(upperModal * anotherNumber.alpha - anotherNumber.lowerModal * beta);
+            } else {
+                newBeta = upperModal * anotherNumber.alpha - anotherNumber.lowerModal * beta;
+            }
         }
-        return new TriangularFuzzyNumber(newLowerModal, newUpperModal, newAlpha, newBeta);
+        return new TriangularFuzzyNumber(newLowerModal, newUpperModal, newAlpha / Math.pow(anotherNumber.upperModal, 2),
+            newBeta / Math.pow(anotherNumber.lowerModal, 2));
     }
 
     /**

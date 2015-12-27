@@ -39,7 +39,7 @@ public class TrapezoidalFuzzyNumberTest {
         TrapezoidalFuzzyNumber number = new TrapezoidalFuzzyNumber(3, 5, 1, 2);
         TrapezoidalFuzzyNumber anotherNumber = new TrapezoidalFuzzyNumber(-1, 2, 2, 1);
 
-        TrapezoidalFuzzyNumber expected = new TrapezoidalFuzzyNumber(-3, 10, -4, -6);
+        TrapezoidalFuzzyNumber expected = new TrapezoidalFuzzyNumber(-3, 10, 5, -6);
         assertEquals(expected, number.multiply(anotherNumber));
     }
 
@@ -75,7 +75,7 @@ public class TrapezoidalFuzzyNumberTest {
         TrapezoidalFuzzyNumber number = new TrapezoidalFuzzyNumber(3, 5, 1, 2);
         TrapezoidalFuzzyNumber anotherNumber = new TrapezoidalFuzzyNumber(1, -2, 2, 1);
 
-        TrapezoidalFuzzyNumber expected = new TrapezoidalFuzzyNumber(-1.5, 5, 1.25, 8);
+        TrapezoidalFuzzyNumber expected = new TrapezoidalFuzzyNumber(-1.5, 5, 1.25, -8);
         assertEquals(expected, number.divide(anotherNumber));
     }
 
