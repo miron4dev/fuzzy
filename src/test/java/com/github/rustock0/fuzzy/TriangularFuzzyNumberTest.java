@@ -105,4 +105,14 @@ public class TriangularFuzzyNumberTest {
         TriangularFuzzyNumber expected = new TriangularFuzzyNumber(POSITIVE_INFINITY, POSITIVE_INFINITY, POSITIVE_INFINITY);
         assertEquals(expected, number.divide(another));
     }
+
+    @Test
+    public void testDivide_multiplication() throws Exception {
+        TriangularFuzzyNumber number = new TriangularFuzzyNumber(3, 1, 2);
+        TriangularFuzzyNumber another = new TriangularFuzzyNumber(2, 2, 1);
+
+        TriangularFuzzyNumber expected = new TriangularFuzzyNumber(1.5, 1.25, 2.5);
+        assertEquals(expected, number.divide(another));
+        assertEquals(number, another.multiply(expected));
+    }
 }

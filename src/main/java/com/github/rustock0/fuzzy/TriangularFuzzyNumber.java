@@ -59,7 +59,7 @@ public class TriangularFuzzyNumber {
      * 2) if all modal values are negative
      * At(a1, alpha1, beta1) * Bt(a2, alpha2, beta2) = Ct(a1*a2, b1*b2, -a2*beta1-a1*beta2, -b2*alpha1 - b1*alpha2)
      * 3) else
-     * At(a1, alpha1, beta1) * Bt(a2, alpha2, beta2) = Ct(a1*a2, b1*b2, a2*alpha1 - a1*beta2, b2*beta1 - b1*alpha2)
+     * At(a1, alpha1, beta1) * Bt(a2, alpha2, beta2) = Ct(a1*a2, b1*b2, (+-)(a2*alpha1 - a1*beta2), (+-)(b2*beta1 - b1*alpha2))
      *
      * @param anotherNumber an another trapezoidal fuzzy number.
      * @return see description.
@@ -99,7 +99,7 @@ public class TriangularFuzzyNumber {
      * 2) if all modal values are negative
      * At(a1, alpha1, beta1) / Bt(a2, alpha2, beta2) = Ct(a1*a2, b1*b2, -a2*beta1-a1*beta2, -b2*alpha1 - b1*alpha2)/a2^2)
      * 3) else
-     * At(a1, alpha1, beta1) / Bt(a2, alpha2, beta2) = Ct(a1*a2, b1*b2, a2*alpha1 - a1*beta2, b2*beta1 - b1*alpha2)/a2^2)
+     * At(a1, alpha1, beta1) / Bt(a2, alpha2, beta2) = Ct(a1*a2, b1*b2, (+-)(a2*alpha1 - a1*beta2), (+-)(b2*beta1 - b1*alpha2)/a2^2))
      *
      * @param anotherNumber an another trapezoidal fuzzy number.
      * @return see description.
