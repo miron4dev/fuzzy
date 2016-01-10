@@ -1,4 +1,4 @@
-package com.github.rustock0.fuzzy.evaluator;
+package com.github.rustock0.evaluator;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
