@@ -115,4 +115,36 @@ public class FuzzyRelationTest {
         FuzzyRelation expected = new FuzzyRelation(new double[][]{{0.0, 1.0, 0.7}, {1.0, 1.0, 0.7}, {0.7, 0.8, 0.0}});
         assertEquals(expected, fuzzyRelation.deductSymmetric());
     }
+
+    @Test
+    public void testIsTransitive() throws Exception {
+        FuzzyRelation fuzzyRelation = new FuzzyRelation(new double[][]{{1, 0, 1, 1}, {1, 0, 1, 1}, {0, 0, 0, 0}, {0, 0, 1, 1}});
+
+        assertTrue(fuzzyRelation.isTransitive());
+    }
+
+    @Test
+    public void testGetComposition() throws Exception {
+        FuzzyRelation fuzzyRelation = new FuzzyRelation(new double[][]{{0.2, 0.5}, {0.6, 1.0}});
+        FuzzyRelation anotherRelation = new FuzzyRelation(new double[][]{{0.3, 0.6, 0.8}, {0.7, 0.9, 0.4}});
+
+        FuzzyRelation expected = new FuzzyRelation(new double[][]{{0.5, 0.5, 0.4}, {0.7, 0.9, 0.6}});
+        assertEquals(expected, fuzzyRelation.getComposition(anotherRelation));
+    }
+
+    @Test
+    public void testGetComposition_set() throws Exception {
+        FuzzyRelation fuzzyRelation = new FuzzyRelation(new double[][]{{0.5, 0.7}, {0.2, 1.0}, {0.9, 0.3}});
+        double[] muSet = new double[]{0.4, 1.0, 0.6};
+
+        double[] expected = new double[]{0.6, 1.0};
+        assertArrayEquals(expected, fuzzyRelation.getComposition(muSet), 0.0);
+    }
+
+    @Test
+    public void testIsTransitiveClosure() throws Exception {
+        FuzzyRelation fuzzyRelation = new FuzzyRelation(new double[][]{{0.3, 0.6, 0.8}, {0.7, 0.9, 0.4}});
+
+        assertTrue(fuzzyRelation.isTransitiveClosure());
+    }
 }

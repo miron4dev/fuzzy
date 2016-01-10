@@ -174,6 +174,82 @@ public class FuzzyRelation {
         return new FuzzyRelation(result);
     }
 
+    /**
+     * Returns true if the current fuzzy relation is transitive.
+     *
+     * @return see description.
+     */
+    public boolean isTransitive() {
+        for (int x = 0; x < matrix.length; x++) {
+            for (int z = 0; z < matrix.length; z++) {
+                double temp = 0;
+                for (int y = 0; y < matrix.length; y++) {
+                    temp = Math.max(temp, Math.min(matrix[x][y], matrix[y][z]));
+                }
+                if (matrix[x][z] < temp) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns a composition of the current and specified fuzzy relations.
+     *
+     * @param relation an another fuzzy relation.
+     * @return see description.
+     */
+    public FuzzyRelation getComposition(FuzzyRelation relation) {
+        double[][] result = new double[matrix.length][relation.matrix[0].length];
+        for (int x = 0; x < matrix.length; x++) {
+            for (int z = 0; z < relation.matrix[x].length; z++) {
+                double temp = 0;
+                for (int y = 0; y < relation.matrix.length; y++) {
+                    temp = Math.max(temp, Math.min(matrix[x][y], relation.matrix[y][z]));
+                }
+                result[x][z] = temp;
+            }
+        }
+        return new FuzzyRelation(result);
+    }
+
+    /**
+     * Returns a composition of the current fuzzy relation and the specified set of mu.
+     *
+     * @param muSet a mu set.
+     * @return see description.
+     */
+    public double[] getComposition(double[] muSet) {
+        double[] result = new double[matrix[0].length];
+        for (int y = 0; y < matrix[0].length; y++) {
+            double temp = 0;
+            for (int x = 0; x < muSet.length; x++) {
+                temp = Math.max(temp, Math.min(muSet[x], matrix[x][y]));
+            }
+            result[y] = temp;
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns true if the current fuzzy relation has transitive closure.
+     *
+     * @return see description.
+     */
+    public boolean isTransitiveClosure() {
+        FuzzyRelation currentRelation = new FuzzyRelation(this.matrix);
+        for (int k = 0; k < matrix[0].length; k++) {
+            FuzzyRelation newRelation = currentRelation.getComposition(currentRelation);
+            if (newRelation.equals(currentRelation)) {
+                return true;
+            }
+            currentRelation = newRelation;
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
         return "FuzzyRelation{" +
