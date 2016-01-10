@@ -28,14 +28,38 @@ public class TrapezoidalFuzzyNumber {
         }
     }
 
+    /**
+     * Returns a result of addition current and specified numbers.
+     * According the Zadeh extension principe:
+     * A(a1,b1,c1,d1)+B(a2,b2,c2,d2)=C(a1+a2, b1+b2, c1+c2, d1+d2)
+     *
+     * @param number an another number.
+     * @return see description.
+     */
     public TrapezoidalFuzzyNumber add(TrapezoidalFuzzyNumber number) {
         return new TrapezoidalFuzzyNumber(a + number.a, b + number.b, c + number.c, d + number.d);
     }
 
+    /**
+     * Returns a result of subtraction current and specified numbers.
+     * According the Zadeh extension principe:
+     * A(a1,b1,c1,d1)-B(a2,b2,c2,d2)=C(a1-d2, b1-c2, c1-b2, d1-a2)
+     *
+     * @param number an another number.
+     * @return see description.
+     */
     public TrapezoidalFuzzyNumber subtract(TrapezoidalFuzzyNumber number) {
         return new TrapezoidalFuzzyNumber(a - number.d, b - number.c, c - number.b, d - number.a);
     }
 
+    /**
+     * Returns a result of multiplication current and specified numbers.
+     * According the Zadeh extension principe:
+     * A(a1,b1,c1,d1)*B(a2,b2,c2,d2)=C(min{ad}, min{bc}, max{bc}, max{ad})
+     *
+     * @param number an another number.
+     * @return see description.
+     */
     public TrapezoidalFuzzyNumber multiply(TrapezoidalFuzzyNumber number) {
         double a1a2 = a * number.a;
         double a1d2 = a * number.d;
@@ -53,16 +77,29 @@ public class TrapezoidalFuzzyNumber {
         return new TrapezoidalFuzzyNumber(a, b, c, d);
     }
 
+    /**
+     * Returns a result of addition current and specified numbers.
+     * According the Zadeh extension principe:
+     * A(a1,b1,c1,d1)/B(a2,b2,c2,d2)=A(a1,b1,c1,d1)*B(d2,c2,b2,a2)
+     *
+     * @param number an another number.
+     * @return see description.
+     */
     public TrapezoidalFuzzyNumber divide(TrapezoidalFuzzyNumber number) {
         return multiply(number.invert());
     }
 
+    /**
+     * Inverts the current fuzzy number.
+     *
+     * @return inverted number.
+     */
     private TrapezoidalFuzzyNumber invert() {
         return new TrapezoidalFuzzyNumber(1.0 / d, 1.0 / c, 1.0 / b, 1.0 / a);
     }
 
     public String toCortege() {
-        return "FuzzyNumber(modalA, modalB, alpha, beta) = (" + b + ", " + c + ", " + (b - a) + " ," + (d - c) + ")";
+        return "FuzzyCortege(modalA, modalB, alpha, beta) = (" + b + ", " + c + ", " + (b - a) + " ," + (d - c) + ")";
     }
 
     @Override
@@ -86,7 +123,7 @@ public class TrapezoidalFuzzyNumber {
         return almostEquals(a, that.a) && almostEquals(b, that.b) && almostEquals(c, that.c) && almostEquals(d, that.d);
     }
 
-    private boolean almostEquals(double a, double b){
+    private boolean almostEquals(double a, double b) {
         return a == b || Math.abs(a - b) < 0.01;
     }
 }

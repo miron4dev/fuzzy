@@ -25,14 +25,38 @@ public class TriangularFuzzyNumber {
         }
     }
 
+    /**
+     * Returns a result of addition current and specified numbers.
+     * According the Zadeh extension principe:
+     * A(a1,b1,c1)+B(a2,b2,c2)=C(a1+a2, b1+b2, c1+c2)
+     *
+     * @param number an another number.
+     * @return see description.
+     */
     public TriangularFuzzyNumber add(TriangularFuzzyNumber number) {
         return new TriangularFuzzyNumber(a + number.a, b + number.b, c + number.c);
     }
 
+    /**
+     * Returns a result of subtraction current and specified numbers.
+     * According the Zadeh extension principe:
+     * A(a1,b1,c1)-B(a2,b2,c2)=C(a1-c2, b1-b2, c1-a2)
+     *
+     * @param number an another number.
+     * @return see description.
+     */
     public TriangularFuzzyNumber subtract(TriangularFuzzyNumber number) {
         return new TriangularFuzzyNumber(a - number.c, b - number.b, c - number.a);
     }
 
+    /**
+     * Returns a result of multiplication current and specified numbers.
+     * According the Zadeh extension principe:
+     * A(a1,b1,c1)*B(a2,b2,c2)=C(min{ac}, b1*b2, max{ac})
+     *
+     * @param number an another number.
+     * @return see description.
+     */
     public TriangularFuzzyNumber multiply(TriangularFuzzyNumber number) {
         double a1a2 = a * number.a;
         double a1c2 = a * number.c;
@@ -44,16 +68,29 @@ public class TriangularFuzzyNumber {
         return new TriangularFuzzyNumber(a, b, c);
     }
 
+    /**
+     * Returns a result of division current and specified numbers.
+     * According the Zadeh extension principe:
+     * A(a1,b1,c1)/B(a2,b2,c2)=A(a1,b1,c1)*B(c2,b2,a2)
+     *
+     * @param number an another number.
+     * @return see description.
+     */
     public TriangularFuzzyNumber divide(TriangularFuzzyNumber number) {
         return multiply(number.invert());
     }
 
+    /**
+     * Inverts the current fuzzy number.
+     *
+     * @return inverted number.
+     */
     private TriangularFuzzyNumber invert() {
         return new TriangularFuzzyNumber(1.0 / c, 1.0 / b, 1.0 / a);
     }
 
     public String toCortege() {
-        return "FuzzyNumber(modalA, alpha, beta) = (" + b + ", " + (b - a) + " ," + (c - b) + ")";
+        return "FuzzyCortege(modalA, alpha, beta) = (" + b + ", " + (b - a) + " ," + (c - b) + ")";
     }
 
     @Override
@@ -66,7 +103,7 @@ public class TriangularFuzzyNumber {
         return almostEquals(a, that.a) && almostEquals(b, that.b) && almostEquals(c, that.c);
     }
 
-    private boolean almostEquals(double a, double b){
+    private boolean almostEquals(double a, double b) {
         return a == b || Math.abs(a - b) < 0.01;
     }
 
