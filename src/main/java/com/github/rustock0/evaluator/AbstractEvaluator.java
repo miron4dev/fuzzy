@@ -1,13 +1,12 @@
 package com.github.rustock0.evaluator;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 /**
  * Abstract implementation of Evaluator.
@@ -17,21 +16,18 @@ import java.util.Map;
 public abstract class AbstractEvaluator {
 
     private final Tokenizer tokenizer;
-    private final Map<String, List<Operator>> operators;
+    private final Map<String, Operator> operators;
+    protected final Map<String, Boolean> literalValues;
 
-    protected AbstractEvaluator(Parameters parameters) {
+    protected AbstractEvaluator(List<Operator> operators, Map<String, Boolean> literalValues) {
         final List<String> delimiters = new ArrayList<>();
         this.operators = new HashMap<>();
-        for (Operator ope : parameters.getOperators()) {
-            delimiters.add(ope.getSymbol());
-            List<Operator> known = this.operators.get(ope.getSymbol());
-            if (known == null) {
-                known = new ArrayList<>();
-                this.operators.put(ope.getSymbol(), known);
-            }
-            known.add(ope);
+        for (Operator operator : operators) {
+            delimiters.add(operator.getSymbol());
+            this.operators.put(operator.getSymbol(), operator);
         }
         tokenizer = new Tokenizer(delimiters);
+        this.literalValues = literalValues;
     }
 
     /**
@@ -60,8 +56,8 @@ public abstract class AbstractEvaluator {
      * @throws IllegalArgumentException if the expression is not correct.
      */
     public Boolean evaluate(String expression) {
-        final Deque<Boolean> values = new ArrayDeque<>(); // values stack
-        final Deque<Token> stack = new ArrayDeque<>(); // operator stack
+        final Stack<Boolean> values = new Stack<>(); // values stack
+        final Stack<Token> stack = new Stack<>(); // operator stack
         final Iterator<String> tokens = tokenizer.tokenize(expression);
         Token previous = null;
         while (tokens.hasNext()) {
@@ -94,7 +90,7 @@ public abstract class AbstractEvaluator {
         return values.pop();
     }
 
-    private void output(Deque<Boolean> values, Token token) {
+    private void output(Stack<Boolean> values, Token token) {
         if (token.isLiteral()) {
             String literal = token.getLiteral();
             values.push(toValue(literal));
@@ -106,7 +102,7 @@ public abstract class AbstractEvaluator {
         }
     }
 
-    private Iterator<Boolean> getArguments(Deque<Boolean> values, int nb) {
+    private Iterator<Boolean> getArguments(Stack<Boolean> values, int nb) {
         if (values.size() < nb) {
             throw new IllegalArgumentException("Expression is invalid!");
         }
@@ -119,8 +115,8 @@ public abstract class AbstractEvaluator {
 
     private Token toToken(String token) {
         if (operators.containsKey(token)) {
-            List<Operator> list = operators.get(token);
-            return Token.buildOperator(list.get(0));
+            Operator operator = operators.get(token);
+            return Token.buildOperator(operator);
         } else {
             return Token.buildLiteral(token);
         }

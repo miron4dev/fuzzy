@@ -1,6 +1,9 @@
 package com.github.rustock0.evaluator;
 
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of Boolean Evaluator.
@@ -15,24 +18,10 @@ public class BooleanEvaluator extends AbstractEvaluator {
     private static final Operator IMPLICATION = new Operator("->", 2, 2);
     private static final Operator EQUIVALENCE = new Operator("<->", 2, 1);
 
-    private static final Parameters PARAMETERS;
+    private static final List<Operator> PARAMETERS = Arrays.asList(NEGATION, AND, OR, IMPLICATION, EQUIVALENCE);
 
-    static {
-        PARAMETERS = new Parameters();
-        PARAMETERS.add(NEGATION);
-        PARAMETERS.add(AND);
-        PARAMETERS.add(OR);
-        PARAMETERS.add(IMPLICATION);
-        PARAMETERS.add(EQUIVALENCE);
-    }
-
-    public BooleanEvaluator() {
-        super(PARAMETERS);
-    }
-
-    @Override
-    protected Boolean toValue(String literal) {
-        return Boolean.valueOf(literal);
+    public BooleanEvaluator(Map<String, Boolean> literalValues) {
+        super(PARAMETERS, literalValues);
     }
 
     @Override
@@ -58,6 +47,17 @@ public class BooleanEvaluator extends AbstractEvaluator {
         } else {
             throw new IllegalArgumentException("Expression is invalid! Unknown operator: " + operator);
         }
+    }
+
+    @Override
+    protected Boolean toValue(String literal) {
+        if ("true".equals(literal) || "false".equals(literal)) {
+            return Boolean.valueOf(literal);
+        }
+        if (!literalValues.containsKey(literal)) {
+            throw new IllegalArgumentException("Expression is invalid! Unknown literal: " + literal);
+        }
+        return literalValues.get(literal);
     }
 
 }
