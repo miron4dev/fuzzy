@@ -21,11 +21,8 @@ public class Operator {
      * @throws NullPointerException     if symbol or associativity are null
      */
     public Operator(String symbol, int operandCount, int precedence) {
-        if (symbol == null) {
-            throw new NullPointerException();
-        }
-        if (symbol.length() == 0) {
-            throw new IllegalArgumentException("Operator symbol can't be null");
+        if (symbol == null || symbol.length() == 0) {
+            throw new NullPointerException("Operator symbol can't be empty");
         }
         if ((operandCount < 1) || (operandCount > 2)) {
             throw new IllegalArgumentException("Only unary and binary operators are supported");

@@ -13,8 +13,6 @@ import static org.junit.Assert.*;
 @SuppressWarnings("unchecked")
 public class BooleanEvaluatorTest {
 
-    private final BooleanEvaluator defaultEvaluator = new BooleanEvaluator(null);
-
     @Test
     public void testEvaluate_negation() {
         assertFalse(new BooleanEvaluator(Collections.singletonMap("A", true)).evaluate("!A"));
@@ -59,9 +57,9 @@ public class BooleanEvaluatorTest {
 
     @Test
     public void testEvaluate_boolean() {
-        assertTrue(defaultEvaluator.evaluate("true | false -> false & true <-> false"));
-        assertFalse(defaultEvaluator.evaluate("true | false -> false & true <-> !false"));
-        assertTrue(defaultEvaluator.evaluate("true & false | true <-> true"));
+        assertTrue(new BooleanEvaluator().evaluate("true | false -> false & true <-> false"));
+        assertFalse(new BooleanEvaluator().evaluate("true | false -> false & true <-> !false"));
+        assertTrue(new BooleanEvaluator().evaluate("true & false | true <-> true"));
     }
 
     @Test(expected = IllegalArgumentException.class)

@@ -11,15 +11,20 @@ import java.util.Stack;
 /**
  * Abstract implementation of Evaluator.
  *
+ * @param <T> evaluator type.
  * @author Evgeny Mironenko.
  */
-public abstract class AbstractEvaluator {
+public abstract class AbstractEvaluator<T> {
 
     private final Tokenizer tokenizer;
     private final Map<String, Operator> operators;
-    protected final Map<String, Boolean> literalValues;
+    protected final Map<String, T> literalValues;
 
-    protected AbstractEvaluator(List<Operator> operators, Map<String, Boolean> literalValues) {
+    public AbstractEvaluator(List<Operator> operators) {
+        this(operators, new HashMap<>());
+    }
+
+    protected AbstractEvaluator(List<Operator> operators, Map<String, T> literalValues) {
         final List<String> delimiters = new ArrayList<>();
         this.operators = new HashMap<>();
         for (Operator operator : operators) {
@@ -36,8 +41,9 @@ public abstract class AbstractEvaluator {
      * @param operator The operator
      * @param operands The operands
      * @return The result of the operation
+     * @throws IllegalArgumentException if the operation could not been evaluated.
      */
-    protected abstract Boolean evaluate(Operator operator, Iterator<Boolean> operands);
+    protected abstract T evaluate(Operator operator, Iterator<T> operands) throws IllegalArgumentException;
 
     /**
      * Evaluates a literal (Converts it to a value).
@@ -46,7 +52,7 @@ public abstract class AbstractEvaluator {
      * @return an instance of T.
      * @throws IllegalArgumentException if the literal can't be converted to a value.
      */
-    protected abstract Boolean toValue(String literal);
+    protected abstract T toValue(String literal) throws IllegalArgumentException;
 
     /**
      * Evaluates an expression.
@@ -55,8 +61,8 @@ public abstract class AbstractEvaluator {
      * @return the result of the evaluation.
      * @throws IllegalArgumentException if the expression is not correct.
      */
-    public Boolean evaluate(String expression) {
-        final Stack<Boolean> values = new Stack<>(); // values stack
+    public T evaluate(String expression) throws IllegalArgumentException {
+        final Stack<T> values = new Stack<>(); // values stack
         final Stack<Token> stack = new Stack<>(); // operator stack
         final Iterator<String> tokens = tokenizer.tokenize(expression);
         Token previous = null;
@@ -90,7 +96,13 @@ public abstract class AbstractEvaluator {
         return values.pop();
     }
 
-    private void output(Stack<Boolean> values, Token token) {
+    /**
+     * Evaluates the specified token and pushes it to the stack.
+     *
+     * @param values stack of values.
+     * @param token  token for evaluation.
+     */
+    private void output(Stack<T> values, Token token) {
         if (token.isLiteral()) {
             String literal = token.getLiteral();
             values.push(toValue(literal));
@@ -102,17 +114,30 @@ public abstract class AbstractEvaluator {
         }
     }
 
-    private Iterator<Boolean> getArguments(Stack<Boolean> values, int nb) {
-        if (values.size() < nb) {
+    /**
+     * Returns an iterator of arguments based on the specified stack of values and amount of operands.
+     *
+     * @param values       stack of values.
+     * @param operandCount amount of operands.
+     * @return see description.
+     */
+    private Iterator<T> getArguments(Stack<T> values, int operandCount) {
+        if (values.size() < operandCount) {
             throw new IllegalArgumentException("Expression is invalid!");
         }
-        LinkedList<Boolean> result = new LinkedList<>();
-        for (int i = 0; i < nb; i++) {
+        LinkedList<T> result = new LinkedList<>();
+        for (int i = 0; i < operandCount; i++) {
             result.addFirst(values.pop());
         }
         return result.iterator();
     }
 
+    /**
+     * Transforms specified string to the instance of {@link Token}.
+     *
+     * @param token string token.
+     * @return see description.
+     */
     private Token toToken(String token) {
         if (operators.containsKey(token)) {
             Operator operator = operators.get(token);
