@@ -1,12 +1,6 @@
 package com.github.rustock0.evaluator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Abstract implementation of Evaluator.
@@ -19,6 +13,10 @@ public abstract class AbstractEvaluator<T> {
     private final Tokenizer tokenizer;
     private final Map<String, Operator> operators;
     protected final Map<String, T> literalValues;
+    private final Map<String, BracketPair> expressionBrackets = new LinkedHashMap<String, BracketPair>() {{
+        put("(", BracketPair.PARENTHESES);
+        put(")", BracketPair.PARENTHESES);
+    }};
 
     public AbstractEvaluator(List<Operator> operators) {
         this(operators, new HashMap<>());
@@ -30,6 +28,10 @@ public abstract class AbstractEvaluator<T> {
         for (Operator operator : operators) {
             delimiters.add(operator.getSymbol());
             this.operators.put(operator.getSymbol(), operator);
+        }
+        for (final BracketPair pair : expressionBrackets.values()) {
+            delimiters.add(pair.getOpen());
+            delimiters.add(pair.getClose());
         }
         tokenizer = new Tokenizer(delimiters);
         this.literalValues = literalValues;
@@ -61,37 +63,71 @@ public abstract class AbstractEvaluator<T> {
      * @return the result of the evaluation.
      * @throws IllegalArgumentException if the expression is not correct.
      */
-    public T evaluate(String expression) throws IllegalArgumentException {
-        final Stack<T> values = new Stack<>(); // values stack
-        final Stack<Token> stack = new Stack<>(); // operator stack
+    public T evaluate(String expression) {
+        final Stack<T> values = new Stack<T>(); // values stack
+        final Stack<Token> operators = new Stack<>(); // operator stack
         final Iterator<String> tokens = tokenizer.tokenize(expression);
         Token previous = null;
         while (tokens.hasNext()) {
+            // read one token from the input stream
             String strToken = tokens.next();
             final Token token = toToken(strToken);
-            if (token.isOperator()) {
-                while (!stack.isEmpty()) {
-                    Token sc = stack.peek();
-                    if (sc.isOperator() && ((token.getPrecedence() <= sc.getPrecedence()) || (token.getPrecedence() < sc.getPrecedence()))) {
-                        output(values, stack.pop());
+            if (token.isOpenBracket()) {
+                // If the token is a left parenthesis, then push it onto the stack.
+                operators.push(token);
+                if (!expressionBrackets.containsKey(token.getBrackets().getOpen())) {
+                    throw new IllegalArgumentException("Invalid bracket in expression: "+strToken);
+                }
+            } else if (token.isCloseBracket()) {
+                if (previous==null) {
+                    throw new IllegalArgumentException("expression can't start with a close bracket");
+                }
+                BracketPair brackets = token.getBrackets();
+                boolean openBracketFound = false;
+                while (!operators.isEmpty()) {
+                    Token sc = operators.pop();
+                    if (sc.isOpenBracket()) {
+                        if (sc.getBrackets().equals(brackets)) {
+                            openBracketFound = true;
+                            break;
+                        } else {
+                            throw new IllegalArgumentException("Invalid parenthesis match "+sc.getBrackets().getOpen()+brackets.getClose());
+                        }
+                    } else {
+                        output(values, sc);
+                    }
+                }
+                if (!openBracketFound) {
+                    throw new IllegalArgumentException("Parentheses mismatched");
+                }
+            } else if (token.isOperator()) {
+                while (!operators.isEmpty()) {
+                    Token sc = operators.peek();
+                    if (sc.isOperator() && (((token.getPrecedence() <= sc.getPrecedence())) || (token.getPrecedence() < sc.getPrecedence()))) {
+                        output(values, operators.pop());
                     } else {
                         break;
                     }
                 }
-                stack.push(token);
+                // push op1 onto the stack.
+                operators.push(token);
             } else {
-                if ((previous != null) && previous.isLiteral()) {
+                if ((previous!=null) && previous.isLiteral()) {
                     throw new IllegalArgumentException("A literal can't follow another literal");
                 }
                 output(values, token);
             }
             previous = token;
         }
-        while (!stack.isEmpty()) {
-            output(values, stack.pop());
+        while (!operators.isEmpty()) {
+            Token sc = operators.pop();
+            if (sc.isOpenBracket() || sc.isCloseBracket()) {
+                throw new IllegalArgumentException("Parentheses mismatched");
+            }
+            output(values, sc);
         }
-        if (values.size() != 1) {
-            throw new IllegalArgumentException("Expression is invalid!");
+        if (values.size()!=1) {
+            throw new IllegalArgumentException();
         }
         return values.pop();
     }
@@ -143,7 +179,20 @@ public abstract class AbstractEvaluator<T> {
             Operator operator = operators.get(token);
             return Token.buildOperator(operator);
         } else {
-            return Token.buildLiteral(token);
+            final BracketPair brackets = getBracketPair(token);
+            if (brackets!=null) {
+                if (brackets.getOpen().equals(token)) {
+                    return Token.buildOpenToken(brackets);
+                } else {
+                    return Token.buildCloseToken(brackets);
+                }
+            } else {
+                return Token.buildLiteral(token);
+            }
         }
+    }
+
+    private BracketPair getBracketPair(String token) {
+        return expressionBrackets.get(token);
     }
 }

@@ -70,7 +70,16 @@ public class BooleanEvaluatorTest {
     @Test
     public void testEvaluate() {
         assertFalse(new BooleanEvaluator(createMap(entry("A", true), entry("B", true), entry("C", false), entry("D", true),
-            entry("E", false))).evaluate("A | B -> C & D <-> !E"));
+                entry("E", false))).evaluate("A | B -> C & D <-> !E"));
+    }
+
+    @Test
+    public void test() {
+        String expression = "A -> B -> A";
+        System.out.println(new BooleanEvaluator(createMap(entry("A", true), entry("B", true))).evaluate(expression));
+        System.out.println(new BooleanEvaluator(createMap(entry("A", true), entry("B", false))).evaluate(expression));
+        System.out.println(new BooleanEvaluator(createMap(entry("A", false), entry("B", true))).evaluate(expression));
+        System.out.println(new BooleanEvaluator(createMap(entry("A", false), entry("B", false))).evaluate(expression));
     }
 
     //

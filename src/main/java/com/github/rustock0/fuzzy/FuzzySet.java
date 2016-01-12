@@ -655,6 +655,10 @@ public class FuzzySet {
         return sum / length;
     }
 
+    public Map<Double, Double> getSet() {
+        return set;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

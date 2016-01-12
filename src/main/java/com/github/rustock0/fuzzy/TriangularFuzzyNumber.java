@@ -1,6 +1,7 @@
 package com.github.rustock0.fuzzy;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -89,8 +90,8 @@ public class TriangularFuzzyNumber {
         return new TriangularFuzzyNumber(1.0 / c, 1.0 / b, 1.0 / a);
     }
 
-    public String toCortege() {
-        return "FuzzyCortege(modalA, alpha, beta) = (" + b + ", " + (b - a) + " ," + (c - b) + ")";
+    public Collection<Double> getValues() {
+        return Arrays.asList(a, b, c);
     }
 
     @Override
