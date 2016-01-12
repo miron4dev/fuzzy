@@ -1,9 +1,11 @@
 package com.github.rustock0.evaluator;
 
-import java.util.Arrays;
+import com.fathzer.soft.javaluator.AbstractEvaluator;
+import com.fathzer.soft.javaluator.Operator;
+import com.fathzer.soft.javaluator.Parameters;
+
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,21 +15,32 @@ import java.util.Map;
  */
 public class FuzzyEvaluator extends AbstractEvaluator<Double> {
 
-    private static final Operator NEGATION = new Operator("!", 1, 5);
-    private static final Operator AND = new Operator("&", 2, 4);
-    private static final Operator OR = new Operator("|", 2, 3);
-    private static final Operator IMPLICATION = new Operator("->", 2, 2);
-    private static final Operator EQUIVALENCE = new Operator("<->", 2, 1);
+    private static final Operator NEGATION = new Operator("!", 1, Operator.Associativity.LEFT, 5);
+    private static final Operator AND = new Operator("&", 2, Operator.Associativity.LEFT, 4);
+    private static final Operator OR = new Operator("|", 2, Operator.Associativity.LEFT, 3);
+    private static final Operator IMPLICATION = new Operator("->", 2, Operator.Associativity.RIGHT, 2);
+    private static final Operator EQUIVALENCE = new Operator("<->", 2, Operator.Associativity.LEFT, 1);
 
-    private static final List<Operator> PARAMETERS = Arrays.asList(NEGATION, AND, OR, IMPLICATION, EQUIVALENCE);
+    private static final Parameters PARAMETERS;
+
+    static {
+        PARAMETERS = new Parameters();
+        PARAMETERS.add(NEGATION);
+        PARAMETERS.add(AND);
+        PARAMETERS.add(OR);
+        PARAMETERS.add(IMPLICATION);
+        PARAMETERS.add(EQUIVALENCE);
+    }
+    private final Map<String, Double> literalValues;
 
     public FuzzyEvaluator(Map<String, Double> literalValues) {
-        super(PARAMETERS, literalValues);
+        super(PARAMETERS);
         validate(literalValues.values());
+        this.literalValues = literalValues;
     }
 
     @Override
-    protected Double evaluate(Operator operator, Iterator<Double> operands) throws IllegalArgumentException {
+    protected Double evaluate(Operator operator, Iterator<Double> operands, Object evaluationContext) throws IllegalArgumentException {
         if (operator == NEGATION) {
             return negation(operands.next());
         } else if (operator == OR) {
@@ -49,14 +62,6 @@ public class FuzzyEvaluator extends AbstractEvaluator<Double> {
         } else {
             throw new IllegalArgumentException("Expression is invalid! Unknown operator: " + operator);
         }
-    }
-
-    @Override
-    protected Double toValue(String literal) throws IllegalArgumentException {
-        if (!literalValues.containsKey(literal)) {
-            throw new IllegalArgumentException("Expression is invalid! Unknown literal: " + literal);
-        }
-        return literalValues.get(literal);
     }
 
     /**
@@ -81,5 +86,13 @@ public class FuzzyEvaluator extends AbstractEvaluator<Double> {
      */
     private Double negation(Double operand) {
         return 1 - operand;
+    }
+
+    @Override
+    protected Double toValue(String literal, Object evaluationContext) {
+        if (!literalValues.containsKey(literal)) {
+            throw new IllegalArgumentException("Expression is invalid! Unknown literal: " + literal);
+        }
+        return literalValues.get(literal);
     }
 }

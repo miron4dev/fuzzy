@@ -31,6 +31,7 @@ public class FuzzySet {
 
     public FuzzySet(Map<Double, Double> set) {
         this.set = set;
+        calculate();
     }
 
     /**

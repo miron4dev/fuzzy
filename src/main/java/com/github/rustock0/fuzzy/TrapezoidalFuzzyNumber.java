@@ -98,10 +98,6 @@ public class TrapezoidalFuzzyNumber {
         return new TrapezoidalFuzzyNumber(1.0 / d, 1.0 / c, 1.0 / b, 1.0 / a);
     }
 
-    public String toCortege() {
-        return "FuzzyCortege(modalA, modalB, alpha, beta) = (" + b + ", " + c + ", " + (b - a) + " ," + (d - c) + ")";
-    }
-
     @Override
     public String toString() {
         return "TrapezoidalFuzzyNumber{" +
